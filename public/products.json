@@ -1,0 +1,648 @@
+[
+  {
+    "code": "015",
+    "product_name": "Aloe Vera Gel",
+    "cc": 0.113,
+    "price": 114.07
+  },
+  {
+    "code": "022",
+    "product_name": "Aloe Lips",
+    "cc": 0.016,
+    "price": 16.32
+  },
+  {
+    "code": "026",
+    "product_name": "Forever Bee Pollen(100 tablet)",
+    "cc": 0.068,
+    "price": 68.92
+  },
+  {
+    "code": "027",
+    "product_name": "Forever Bee Propolis(60 tablet)",
+    "cc": 0.143,
+    "price": 143.87
+  },
+  {
+    "code": "028",
+    "product_name": "Forever Bright Toothgel (130g)",
+    "cc": 0.035,
+    "price": 34.62
+  },
+  {
+    "code": "032",
+    "product_name": "DREAM BY FOREVER",
+    "cc": 0.026,
+    "price": 26.52
+  },
+  {
+    "code": "033",
+    "product_name": "DESIRE BY FOREVER",
+    "cc": 0.026,
+    "price": 26.52
+  },
+  {
+    "code": "034",
+    "product_name": "Aloe Berry Nectar",
+    "cc": 0.113,
+    "price": 114.07
+  },
+  {
+    "code": "036",
+    "product_name": "Forever Royal Jelly(60 tablet)",
+    "cc": 0.148,
+    "price": 148.69
+  },
+  {
+    "code": "037",
+    "product_name": "Nature-Min (180 Tablet)",
+    "cc": 0.081,
+    "price": 81.87
+  },
+  {
+    "code": "040",
+    "product_name": "Aloe First Spray",
+    "cc": 0.089,
+    "price": 89.39
+  },
+  {
+    "code": "048",
+    "product_name": "Forever Absorbent-C (100 tablet)",
+    "cc": 0.079,
+    "price": 0
+  },
+  {
+    "code": "051",
+    "product_name": "Aloe Propolis Creme",
+    "cc": 0.089,
+    "price": 89.39
+  },
+  {
+    "code": "061",
+    "product_name": "Aloe Vera Gelly",
+    "cc": 0.067,
+    "price": 67.13
+  },
+  {
+    "code": "063",
+    "product_name": "Aloe Moisturising Lotion",
+    "cc": 0.067,
+    "price": 67.13
+  },
+  {
+    "code": "064",
+    "product_name": "Aloe Heat Lotion",
+    "cc": 0.067,
+    "price": 67.13
+  },
+  {
+    "code": "065",
+    "product_name": "Garlic Thyme (100 tablet)",
+    "cc": 0.081,
+    "price": 81.87
+  },
+  
+  {
+    "code": "068L",
+    "product_name": "Fields Of Greens (80 tablet)",
+    "cc": 0.054,
+    "price": 54.17
+  },
+  {
+    "code": "069",
+    "product_name": "R-3 Factor",
+    "cc": 0.148,
+    "price": 148.69
+  },
+  {
+    "code": "071L",
+    "product_name": "Garcinia Plus (70 tablet)",
+    "cc": 0.148,
+    "price": 149
+  },
+  
+ 
+  {
+    "code": "082",
+    "product_name": "BHRINGRAJ HAIR OIL",
+    "cc": 0.05,
+    "price": 50.31
+  },
+  {
+    "code": 187,
+    "product_name": "Alpha E Factor",
+    "cc": 0.148,
+    "price": 148.69
+  },
+  {
+    "code": "188",
+    "product_name": "Forever B 12 Plus (60 tablet)",
+    "cc": 0.069,
+    "price": 69.53
+  },
+  {
+    "code": 196,
+    "product_name": "Forever Freedom",
+    "cc": 0.162,
+    "price": 162.82
+  },
+  {
+    "code": 200,
+    "product_name": "Aloe Blossom Herbal Tea(25 poset)",
+    "cc": 0.079,
+    "price": 80
+  },
+  {
+    "code": 205,
+    "product_name": "Aloe Msm Gel",
+    "cc": 0.109,
+    "price": 109.25
+  },
+  {
+    "code": "206L",
+    "product_name": "Forever Calcium (90 tablet)",
+    "cc": 0.109,
+    "price": 109.25
+  },
+  {
+    "code": 207,
+    "product_name": "Forever Bee Honey (0.5 Kg)",
+    "cc": 0.075,
+    "price": 76.48
+  },
+  {
+    "code": "215L",
+    "product_name": "Forever Multi Maca (60 tablet)",
+    "cc": 0.118,
+    "price": 118.88
+  },
+ 
+  {
+    "code": 238,
+    "product_name": "Aloe Scrub",
+    "cc": 0.07,
+    "price": 70.73
+  },
+  {
+    "code": "284",
+    "product_name": "Avacado Face & Body Soap",
+    "cc": 0.034,
+    "price": 34.22
+  },
+  {
+    "code": "289",
+    "product_name": "Forever Lean",
+    "cc": 0.208,
+    "price": 209.28
+  },
+  {
+    "code": 307,
+    "product_name": "Forever Aloe MPD 2X",
+    "cc": 0.109,
+    "price": 109.25
+  },
+  {
+    "code": 312,
+    "product_name": "Forever CardioHealth",
+    "cc": 0.15,
+    "price": 171
+  },
+  {
+    "code": 318,
+    "product_name": "Hand Sanitizer",
+    "cc": 0.02,
+    "price": 20.4
+  },
+  {
+    "code": 341,
+    "product_name": "Aloe Mask powder",
+    "cc": 0.095,
+    "price": 95.4
+  },
+  {
+    "code": "354L",
+    "product_name": "Forever Kids (120 tablet)",
+    "cc": 0.068,
+    "price": 68.03
+  },
+  {
+    "code": "355L",
+    "product_name": "Forever Immublend (60 tablet)",
+    "cc": 0.118,
+    "price": 118.76
+  },
+  {
+    "code": "374L",
+    "product_name": "Vitolize-Men (60 tablet)",
+    "cc": 0.136,
+    "price": 141.26
+  },
+  {
+    "code": "375L",
+    "product_name": "Vitolize-Women (120 tablet)",
+    "cc": 0.143,
+    "price": 144.18
+  },
+  {
+    "code": "376L",
+    "product_name": "Forever Arctic Sea (120 tablet)",
+    "cc": 0.143,
+    "price": 149.03
+  },
+  {
+    "code": "439",
+    "product_name": "Forever Daily (60 table)",
+    "cc": 0.09,
+    "price": 90.9
+  },
+  {
+    "code": "456",
+    "product_name": "VITAL5/ALOE VERA GEL",
+    "cc": 1.148,
+    "price": 1197.96
+  },
+  {
+    "code": "457",
+    "product_name": "VITAL5/ALOE BERRY NECTAR",
+    "cc": 1.148,
+    "price": 1197.96
+  },
+  {
+    "code": "459",
+    "product_name": "VITAL5/FOREVER FREEDOM",
+    "cc": 1.34,
+    "price": 1392.96
+  },
+  {
+    "code": "463",
+    "product_name": "Forever Therm (60 tablet)",
+    "cc": 0.129,
+    "price": 129.42
+  },
+  {
+    "code": "464",
+    "product_name": "Forever Fiber (30 sache)",
+    "cc": 0.13,
+    "price": 135.33
+  },
+  {
+    "code": 470,
+    "product_name": "LITE ULTRA-VANILLA(Pouch)",
+    "cc": 0.138,
+    "price": 138.75
+  },
+  {
+    "code": 471,
+    "product_name": "LITE ULTRA-CHOCO(Pouch)",
+    "cc": 0.138,
+    "price": 138.75
+  },
+  {
+    "code": 473,
+    "product_name": "ARGI + PACKET/POUCH",
+    "cc": 0.341,
+    "price": 343.73
+  },
+  {
+    "code": 475,
+    "product_name": "CLEAN 9 - VANILLA Pouch",
+    "cc": 0.771,
+    "price": 780.73
+  },
+  {
+    "code": 476,
+    "product_name": "CLEAN 9 - CHOCOLATE Pouch",
+    "cc": 0.771,
+    "price": 780.73
+  },
+
+ 
+  {
+    "code": "528",
+    "product_name": "F15-BEGINNER 1&2-VANILLA",
+    "cc": 0.69,
+    "price": 700.49
+  },
+  {
+    "code": "529",
+    "product_name": "F15-BEGINNER 1&2-CHOCO",
+    "cc": 0.69,
+    "price": 700.49
+  },
+  {
+    "code": "532",
+    "product_name": "F15-INTERMEDIATE 1&2-VANILLA",
+    "cc": 0.69,
+    "price": 700.49
+  },
+  {
+    "code": "534",
+    "product_name": "F15-INTERMEDIATE 1&2-CHOCO",
+    "cc": 0.69,
+    "price": 700.49
+  },
+  {
+    "code": "536",
+    "product_name": "F15-ADVANCED 1&2-VANILLA",
+    "cc": 0.69,
+    "price": 700.49
+  },
+  {
+    "code": "537",
+    "product_name": "F15-ADVANCED 1&2-CHOCO",
+    "cc": 0.69,
+    "price": 700.49
+  },
+  {
+    "code": "547",
+    "product_name": "Clean 9 Vanilla with Innerpack",
+    "cc": 0.598,
+    "price": 603.3
+  },
+  {
+    "code": "548",
+    "product_name": "Clean 9 Choco with Innerpack",
+    "cc": 0.598,
+    "price": 603.3
+  },
+  {
+    "code": "551L",
+    "product_name": "FOREVER MOVE (90 tablet)",
+    "cc": 0.29,
+    "price": 294.37
+  },
+  {
+    "code": "559",
+    "product_name": "Exfoliator",
+    "cc": 0.078,
+    "price": 79.46
+  },
+  {
+    "code": "560",
+    "product_name": "Balancing Toner",
+    "cc": 0.089,
+    "price": 90.59
+  },
+  {
+    "code": "561",
+    "product_name": "Eye Cream",
+    "cc": 0.083,
+    "price": 84.28
+  },
+  {
+    "code": "566",
+    "product_name": "FOREVER IMMUNE GUMMY",
+    "cc": 0.148,
+    "price": 149.06
+  },
+  {
+    "code": "605",
+    "product_name": "Cleansing Gel",
+    "cc": 0.103,
+    "price": 103.24
+  },
+  {
+    "code": "606",
+    "product_name": "Illuminating Gel",
+    "cc": 0.098,
+    "price": 98.43
+  },
+  {
+    "code": "607",
+    "product_name": "Refreshing Gel Mask",
+    "cc": 0.103,
+    "price": 103.24
+  },
+  {
+    "code": "608",
+    "product_name": "Soothing Gel Moisturizer",
+    "cc": 0.112,
+    "price": 112.57
+  },
+  {
+    "code": "609",
+    "product_name": "Sonya Skin System Pack",
+    "cc": 0.356,
+    "price": 417.47
+  },
+  {
+    "code": "610",
+    "product_name": "New Active Pro B (30 tablet)",
+    "cc": 0.157,
+    "price": 158.01
+  },
+  {
+    "code": "612",
+    "product_name": "New Activator",
+    "cc": 0.066,
+    "price": 68.45
+  },
+  {
+    "code": "613",
+    "product_name": "MARINE COLLAGEN",
+    "cc": 0.327,
+    "price": 329.24
+  },
+  
+  {
+    "code": "617",
+    "product_name": "New sunscreen cream",
+    "cc": 0.083,
+    "price": 84.58
+  },
+  {
+    "code": "618",
+    "product_name": "Hydrating Serum",
+    "cc": 0.144,
+    "price": 144.47
+  },
+  {
+    "code": "624",
+    "product_name": "I vision (60 tablet)",
+    "cc": 0.142,
+    "price": 147.47
+  },
+  {
+    "code": "621",
+    "product_name": "Supergreens",
+    "cc": 0.154,
+    "price": 156.81
+  },
+  {
+    "code": "622",
+    "product_name": "Forever Focus (120 tablet)",
+    "cc": 0.354,
+    "price": 356.31
+  },
+  {
+    "code": "633",
+    "product_name": "Aloe Liquid Soap (new)",
+    "cc": 0.088,
+    "price": 88.57
+  },
+  {
+    "code": "634",
+    "product_name": "Journey Pack",
+    "cc": 1.5,
+    "price": 1539.64
+  },
+  {
+    "code": "635",
+    "product_name": "Journey Pack",
+    "cc": 1.5,
+    "price": 1539.64
+  },
+  {
+    "code": "636",
+    "product_name": "Journey Pack",
+    "cc": 1.5,
+    "price": 1539.64
+  },
+  {
+    "code": "640",
+    "product_name": "Aloe Jojoba SHAMPOO",
+    "cc": 0.09,
+    "price": 90.58
+  },
+  {
+    "code": "641",
+    "product_name": "ALOE JOJOBA CONDITIONER",
+    "cc": 0.097,
+    "price": 97.46
+  },
+  {
+    "code": "642",
+    "product_name": "NOURISHING HAIR OIL",
+    "cc": 0.111,
+    "price": 111.68
+  },
+  {
+    "code": "643",
+    "product_name": "FOREVER ALOFA",
+    "cc": 0.134,
+    "price": 134.82
+  },
+  {
+    "code": "644",
+    "product_name": "FOREVER MALOSI",
+    "cc": 0.134,
+    "price": 134.82
+  },
+  {
+    "code": "645",
+    "product_name": "PROTECTING DAY LOTION",
+    "cc": 0.146,
+    "price": 146.49
+  },
+  {
+    "code": "646",
+    "product_name": "Aloe Body Wash ",
+    "cc": 0.107,
+    "price": 107.78
+  },
+  {
+    "code": "647",
+    "product_name": "Aloe Body Lotion",
+    "cc": 0.107,
+    "price": 107.78
+  },
+  {
+    "code": "651",
+    "product_name": "DEEP MOISTURIZING CREAM (71g)",
+    "cc": 0.133,
+    "price": 135.63
+  },
+  {
+    "code": "653",
+    "product_name": "Replenishing Skin Oil",
+    "cc": 0.121,
+    "price": 121.75
+  },
+ 
+
+  {
+    "code": "664",
+    "product_name": "FOREVER BIO CELLULOSE MASK X3",
+    "cc": 0.127,
+    "price": 127.77
+  },
+  {
+    "code": "001",
+    "product_name": "Touch of forever ",
+    "cc": 2.0,
+    "price": 2012.37
+  },
+  {
+    "code": "994",
+    "product_name": "Forever Mini Beauty Pack",
+    "cc": 1.0,
+    "price": 1020
+  },
+  {
+    "code": "995",
+    "product_name": "Forever Mini Fitness Pack",
+    "cc": 1.0,
+    "price": 1006.19
+  },
+  {
+    "code": "999",
+    "product_name": "Forever Favorites Combo Pack",
+    "cc": 2.0,
+    "price": 2012.37
+  },
+  {
+    "code": "067",
+    "product_name": "Aloe Ever Shield Deodorant TR",
+    "cc": 0.032,
+    "price": 38.7292815
+  },
+  {
+    "code": "070",
+    "product_name": "Gentleman's Pride TR",
+    "cc": 0.067,
+    "price": 79.96939649999999
+  },
+  {
+    "code": "072L",
+    "product_name": "Lycium Plus TR",
+    "cc": 0.148,
+    "price": 177.491475
+  },
+  {
+    "code": 209,
+    "product_name": "25th Edition for men TR",
+    "cc": 0.197,
+    "price": 236.651625
+  },
+  {
+    "code": 236,
+    "product_name": "Forever Epiblanc TR",
+    "cc": 0.09,
+    "price": 107.57555550000001
+  },
+  {
+    "code": 264,
+    "product_name": "Active HA TR",
+    "cc": 0.153,
+    "price": 183.2388075
+  },
+  {
+    "code": 311,
+    "product_name": "Sonya Deep Moisturizing Cream TR",
+    "cc": 0.15,
+    "price": 180.0124515
+  },
+  
+  {
+    "code": 555,
+    "product_name": "infinite firming serum TR",
+    "cc": 0.229,
+    "price": 276.81614099999996
+  },
+  {
+    "code": 558,
+    "product_name": "infinite restoring cream TR",
+    "cc": 0.255,
+    "price": 308.72844449999997
+  }
+]
