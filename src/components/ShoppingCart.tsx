@@ -126,12 +126,12 @@ export function ShoppingCart() {
                       Qty: {item.quantity} → Pay for: {Math.ceil(item.quantity / item.offer)}
                     </div>
                     <div className="font-medium text-green-600">
-                      {((item.price * Math.ceil(item.quantity / item.offer) + item.cc * item.quantity) * state.pricingSettings.exchangeRate * (1 - state.pricingSettings.discountPercentage / 100)).toLocaleString()} IRR
+                      {Math.floor((item.price * Math.ceil(item.quantity / item.offer) + item.cc * item.quantity) * state.pricingSettings.exchangeRate * (1 - state.pricingSettings.discountPercentage / 100)).toLocaleString()} IRR
                     </div>
                   </div>
                 ) : (
                   <div className="font-medium">
-                    {((item.price * item.quantity + item.cc * item.quantity) * state.pricingSettings.exchangeRate * (1 - state.pricingSettings.discountPercentage / 100)).toLocaleString()} IRR
+                    {Math.floor((item.price * item.quantity + item.cc * item.quantity) * state.pricingSettings.exchangeRate * (1 - state.pricingSettings.discountPercentage / 100)).toLocaleString()} IRR
                   </div>
                 )}
               </div>
@@ -153,7 +153,7 @@ export function ShoppingCart() {
           {state.pricingSettings.discountPercentage > 0 && (
             <div className="flex justify-between text-sm text-green-600">
               <span>Discount ({state.pricingSettings.discountPercentage}%):</span>
-              <span>-{(((getCartSubtotal() + getCartShipping()) * state.pricingSettings.discountPercentage) / 100).toLocaleString()} IRR</span>
+              <span>-{Math.floor(((getCartSubtotal() + getCartShipping()) * state.pricingSettings.discountPercentage) / 100).toLocaleString()} IRR</span>
             </div>
           )}
           <Separator />

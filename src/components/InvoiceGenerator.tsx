@@ -278,10 +278,10 @@ export function InvoiceGenerator() {
                         const effectiveQuantity = item.offerEnabled && item.offer 
                           ? Math.ceil(item.quantity / item.offer) 
                           : item.quantity;
-                        const productCost = item.price * effectiveQuantity * pricingSettings.exchangeRate;
-                        const shippingCost = item.cc * item.quantity * pricingSettings.exchangeRate;
+                        const productCost = Math.floor(item.price * effectiveQuantity * pricingSettings.exchangeRate);
+                        const shippingCost = Math.floor(item.cc * item.quantity * pricingSettings.exchangeRate);
                         const itemTotal = productCost + shippingCost;
-                        const discountAmount = (itemTotal * pricingSettings.discountPercentage) / 100;
+                        const discountAmount = Math.floor((itemTotal * pricingSettings.discountPercentage) / 100);
                         const finalTotal = itemTotal - discountAmount;
                         
                         return `
@@ -318,7 +318,7 @@ export function InvoiceGenerator() {
                     ${pricingSettings.discountPercentage > 0 ? `
                       <div class="totals-row discount-row">
                         <span>Discount (${pricingSettings.discountPercentage}%):</span>
-                        <span>-${(((getCartSubtotal() + getCartShipping()) * pricingSettings.discountPercentage) / 100).toLocaleString()} IRR</span>
+                        <span>-${Math.floor(((getCartSubtotal() + getCartShipping()) * pricingSettings.discountPercentage) / 100).toLocaleString()} IRR</span>
                       </div>
                     ` : ''}
                     <div class="totals-row total-row">
@@ -428,10 +428,10 @@ export function InvoiceGenerator() {
                     const effectiveQuantity = item.offerEnabled && item.offer 
                       ? Math.ceil(item.quantity / item.offer) 
                       : item.quantity;
-                    const productCost = item.price * effectiveQuantity * pricingSettings.exchangeRate;
-                    const shippingCost = item.cc * item.quantity * pricingSettings.exchangeRate;
+                    const productCost = Math.floor(item.price * effectiveQuantity * pricingSettings.exchangeRate);
+                    const shippingCost = Math.floor(item.cc * item.quantity * pricingSettings.exchangeRate);
                     const itemTotal = productCost + shippingCost;
-                    const discountAmount = (itemTotal * pricingSettings.discountPercentage) / 100;
+                    const discountAmount = Math.floor((itemTotal * pricingSettings.discountPercentage) / 100);
                     const finalTotal = itemTotal - discountAmount;
 
                     return (
@@ -482,7 +482,7 @@ export function InvoiceGenerator() {
             {pricingSettings.discountPercentage > 0 && (
               <div className="flex justify-between text-green-600">
                 <span>Discount ({pricingSettings.discountPercentage}%):</span>
-                <span>-{(((getCartSubtotal() + getCartShipping()) * pricingSettings.discountPercentage) / 100).toLocaleString()} IRR</span>
+                <span>-{Math.floor(((getCartSubtotal() + getCartShipping()) * pricingSettings.discountPercentage) / 100).toLocaleString()} IRR</span>
               </div>
             )}
             <Separator />

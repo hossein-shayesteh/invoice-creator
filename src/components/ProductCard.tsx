@@ -51,7 +51,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const calculateDisplayPrice = () => {
     const { exchangeRate, discountPercentage } = state.pricingSettings;
-    const basePrice = product.price * exchangeRate;
+    const basePrice = Math.floor(product.price * exchangeRate);
     const shippingCost = product.cc * exchangeRate;
     const total = basePrice + shippingCost;
     const discountAmount = (total * discountPercentage) / 100;

@@ -126,22 +126,23 @@ export default function Home() {
 
         {/* Main Content */}
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="products" className="flex items-center gap-2">
-              <Package className="w-4 h-4" />
-              Products ({filteredProducts.length})
+          <TabsList className="flex flex-wrap w-full">
+            <TabsTrigger value="products" className="flex-1 flex items-center justify-center gap-1 min-w-[120px]">
+              <Package className="w-4 h-4 sm:mr-0" />
+              <span className="hidden sm:inline">Products</span>
+              <span className="sm:inline">({filteredProducts.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="cart" className="flex items-center gap-2">
-              <CartIcon className="w-4 h-4" />
-              Cart
+            <TabsTrigger value="cart" className="flex-1 flex items-center justify-center gap-1 min-w-[120px]">
+              <CartIcon className="w-4 h-4 sm:mr-0" />
+              <span className="sm:inline">Cart</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="w-4 h-4" />
-              Settings
+            <TabsTrigger value="settings" className="flex-1 flex items-center justify-center gap-1 min-w-[120px]">
+              <Settings className="w-4 h-4 sm:mr-0" />
+              <span className="sm:inline">Settings</span>
             </TabsTrigger>
-            <TabsTrigger value="invoice" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              Invoice
+            <TabsTrigger value="invoice" className="flex-1 flex items-center justify-center gap-1 min-w-[120px]">
+              <FileText className="w-4 h-4 sm:mr-0" />
+              <span className="sm:inline">Invoice</span>
             </TabsTrigger>
           </TabsList>
 

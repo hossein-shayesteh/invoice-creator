@@ -205,18 +205,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const { exchangeRate, discountPercentage } = state.pricingSettings;
     
     let effectiveQuantity = quantity;
-    let shippingCost = cc * quantity * exchangeRate;
+    let shippingCost = Math.floor(cc * quantity * exchangeRate);
     
     if (offerEnabled && offer) {
       // Customer gets 'offer' products for the price of 1
       effectiveQuantity = Math.ceil(quantity / offer);
       // But shipping applies to all items
-      shippingCost = cc * quantity * exchangeRate;
+      shippingCost = Math.floor(cc * quantity * exchangeRate);
     }
     
-    const productCost = price * effectiveQuantity * exchangeRate;
+    const productCost = Math.floor(price * effectiveQuantity * exchangeRate);
     const subtotal = productCost + shippingCost;
-    const discountAmount = (subtotal * discountPercentage) / 100;
+    const discountAmount = Math.floor((subtotal * discountPercentage) / 100);
     
     return subtotal - discountAmount;
   };
@@ -231,7 +231,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         effectiveQuantity = Math.ceil(quantity / offer);
       }
       
-      return total + (price * effectiveQuantity * exchangeRate);
+      return total + Math.floor(price * effectiveQuantity * exchangeRate);
     }, 0);
   };
 
@@ -239,7 +239,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return state.items.reduce((total, item) => {
       const { cc, quantity } = item;
       const { exchangeRate } = state.pricingSettings;
-      return total + (cc * quantity * exchangeRate);
+      return total + Math.floor(cc * quantity * exchangeRate);
     }, 0);
   };
 
@@ -247,7 +247,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const subtotal = getCartSubtotal();
     const shipping = getCartShipping();
     const total = subtotal + shipping;
-    const discountAmount = (total * state.pricingSettings.discountPercentage) / 100;
+    const discountAmount = Math.floor((total * state.pricingSettings.discountPercentage) / 100);
     return total - discountAmount;
   };
 
