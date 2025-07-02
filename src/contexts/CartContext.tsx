@@ -1,7 +1,14 @@
-'use client';
+"use client";
 
-import { CartItem, PricingSettings, Product } from '@/types';
-import { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react";
+
+import { CartItem, PricingSettings, Product } from "@/types";
 
 interface CartState {
   items: CartItem[];
@@ -9,13 +16,21 @@ interface CartState {
 }
 
 type CartAction =
-  | { type: 'ADD_TO_CART'; payload: { product: Product; quantity: number; offerEnabled: boolean } }
-  | { type: 'REMOVE_FROM_CART'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { code: string; quantity: number } }
-  | { type: 'TOGGLE_OFFER'; payload: string }
-  | { type: 'UPDATE_EXCHANGE_RATE'; payload: number }
-  | { type: 'UPDATE_DISCOUNT'; payload: number }
-  | { type: 'CLEAR_CART' };
+  | {
+      type: "ADD_TO_CART";
+      payload: {
+        product: Product;
+        quantity: number;
+        offerEnabled: boolean;
+        offerQuantity?: number;
+      };
+    }
+  | { type: "REMOVE_FROM_CART"; payload: string }
+  | { type: "UPDATE_QUANTITY"; payload: { code: string; quantity: number } }
+  | { type: "TOGGLE_OFFER"; payload: string }
+  | { type: "UPDATE_EXCHANGE_RATE"; payload: number }
+  | { type: "UPDATE_DISCOUNT"; payload: number }
+  | { type: "CLEAR_CART" };
 
 // Default values if localStorage is not available
 const defaultSettings = {
@@ -34,54 +49,66 @@ const initialState: CartState = {
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
-    case 'ADD_TO_CART': {
-      const { product, quantity, offerEnabled } = action.payload;
-      const existingItem = state.items.find(item => item.code === product.code);
-      
+    case "ADD_TO_CART": {
+      const { product, quantity, offerEnabled, offerQuantity } = action.payload;
+      const existingItem = state.items.find(
+        (item) => item.code === product.code,
+      );
+
       if (existingItem) {
         return {
           ...state,
-          items: state.items.map(item =>
+          items: state.items.map((item) =>
             item.code === product.code
-              ? { ...item, quantity: item.quantity + quantity, offerEnabled }
-              : item
+              ? {
+                  ...item,
+                  quantity: item.quantity + quantity,
+                  offerEnabled,
+                  offerQuantity,
+                }
+              : item,
           ),
         };
       }
-      
+
       return {
         ...state,
-        items: [...state.items, { ...product, quantity, offerEnabled }],
+        items: [
+          ...state.items,
+          { ...product, quantity, offerEnabled, offerQuantity },
+        ],
       };
     }
-    
-    case 'REMOVE_FROM_CART':
+
+    case "REMOVE_FROM_CART":
       return {
         ...state,
-        items: state.items.filter(item => item.code !== action.payload),
+        items: state.items.filter((item) => item.code !== action.payload),
       };
-    
-    case 'UPDATE_QUANTITY':
+
+    case "UPDATE_QUANTITY":
       return {
         ...state,
-        items: state.items.map(item =>
-          item.code === action.payload.code
-            ? { ...item, quantity: Math.max(0, action.payload.quantity) }
-            : item
-        ).filter(item => item.quantity > 0),
+        items: state.items
+          .map((item) =>
+            item.code === action.payload.code
+              ? { ...item, quantity: Math.max(0, action.payload.quantity) }
+              : item,
+          )
+          .filter((item) => item.quantity > 0),
       };
-    
-    case 'TOGGLE_OFFER':
+
+    case "TOGGLE_OFFER":
       return {
         ...state,
-        items: state.items.map(item =>
+        items: state.items.map((item) =>
           item.code === action.payload
             ? { ...item, offerEnabled: !item.offerEnabled }
-            : item
+            : item,
         ),
       };
-    
-    case 'UPDATE_EXCHANGE_RATE':
+
+    case "UPDATE_EXCHANGE_RATE":
       return {
         ...state,
         pricingSettings: {
@@ -89,8 +116,8 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           exchangeRate: action.payload,
         },
       };
-    
-    case 'UPDATE_DISCOUNT':
+
+    case "UPDATE_DISCOUNT":
       return {
         ...state,
         pricingSettings: {
@@ -98,13 +125,13 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           discountPercentage: action.payload,
         },
       };
-    
-    case 'CLEAR_CART':
+
+    case "CLEAR_CART":
       return {
         ...state,
         items: [],
       };
-    
+
     default:
       return state;
   }
@@ -112,7 +139,12 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
 interface CartContextType {
   state: CartState;
-  addToCart: (product: Product, quantity: number, offerEnabled: boolean) => void;
+  addToCart: (
+    product: Product,
+    quantity: number,
+    offerEnabled: boolean,
+    offerQuantity?: number,
+  ) => void;
   removeFromCart: (code: string) => void;
   updateQuantity: (code: string, quantity: number) => void;
   toggleOffer: (code: string) => void;
@@ -123,123 +155,132 @@ interface CartContextType {
   getCartSubtotal: () => number;
   getCartShipping: () => number;
   getCartTotal: () => number;
+  getTotalCC: () => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
-  
+
   // Load pricing settings from localStorage on initial render
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
-        const savedExchangeRate = localStorage.getItem('exchangeRate');
-        const savedDiscount = localStorage.getItem('discount');
-        
+        const savedExchangeRate = localStorage.getItem("exchangeRate");
+        const savedDiscount = localStorage.getItem("discount");
+
         if (savedExchangeRate) {
-          dispatch({ 
-            type: 'UPDATE_EXCHANGE_RATE', 
-            payload: parseFloat(savedExchangeRate) 
+          dispatch({
+            type: "UPDATE_EXCHANGE_RATE",
+            payload: parseFloat(savedExchangeRate),
           });
         }
-        
+
         if (savedDiscount) {
-          dispatch({ 
-            type: 'UPDATE_DISCOUNT', 
-            payload: parseFloat(savedDiscount) 
+          dispatch({
+            type: "UPDATE_DISCOUNT",
+            payload: parseFloat(savedDiscount),
           });
         }
       } catch (error) {
-        console.error('Error loading pricing settings from localStorage:', error);
+        console.error(
+          "Error loading pricing settings from localStorage:",
+          error,
+        );
       }
     }
   }, []);
 
-  const addToCart = (product: Product, quantity: number, offerEnabled: boolean) => {
-    dispatch({ type: 'ADD_TO_CART', payload: { product, quantity, offerEnabled } });
+  const addToCart = (
+    product: Product,
+    quantity: number,
+    offerEnabled: boolean,
+    offerQuantity?: number,
+  ) => {
+    dispatch({
+      type: "ADD_TO_CART",
+      payload: { product, quantity, offerEnabled, offerQuantity },
+    });
   };
 
   const removeFromCart = (code: string) => {
-    dispatch({ type: 'REMOVE_FROM_CART', payload: code });
+    dispatch({ type: "REMOVE_FROM_CART", payload: code });
   };
 
   const updateQuantity = (code: string, quantity: number) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { code, quantity } });
+    dispatch({ type: "UPDATE_QUANTITY", payload: { code, quantity } });
   };
 
   const toggleOffer = (code: string) => {
-    dispatch({ type: 'TOGGLE_OFFER', payload: code });
+    dispatch({ type: "TOGGLE_OFFER", payload: code });
   };
 
   const updateExchangeRate = (rate: number) => {
-    dispatch({ type: 'UPDATE_EXCHANGE_RATE', payload: rate });
+    dispatch({ type: "UPDATE_EXCHANGE_RATE", payload: rate });
     // Save to localStorage
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
-        localStorage.setItem('exchangeRate', rate.toString());
+        localStorage.setItem("exchangeRate", rate.toString());
       } catch (error) {
-        console.error('Error saving exchange rate to localStorage:', error);
+        console.error("Error saving exchange rate to localStorage:", error);
       }
     }
   };
 
   const updateDiscount = (discount: number) => {
-    dispatch({ type: 'UPDATE_DISCOUNT', payload: discount });
+    dispatch({ type: "UPDATE_DISCOUNT", payload: discount });
     // Save to localStorage
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
-        localStorage.setItem('discount', discount.toString());
+        localStorage.setItem("discount", discount.toString());
       } catch (error) {
-        console.error('Error saving discount to localStorage:', error);
+        console.error("Error saving discount to localStorage:", error);
       }
     }
   };
 
   const clearCart = () => {
-    dispatch({ type: 'CLEAR_CART' });
+    dispatch({ type: "CLEAR_CART" });
   };
 
   const getItemTotal = (item: CartItem): number => {
-    const { price, quantity, offerEnabled, offer, cc } = item;
+    const { price, quantity, offerEnabled, offerQuantity, shipment } = item;
     const { exchangeRate, discountPercentage } = state.pricingSettings;
-    
-    let effectiveQuantity = quantity;
-    let shippingCost = Math.floor(cc * quantity * exchangeRate);
-    
-    if (offerEnabled && offer) {
-      // Customer gets 'offer' products for the price of 1
-      effectiveQuantity = Math.ceil(quantity / offer);
-      // But shipping applies to all items
-      shippingCost = Math.floor(cc * quantity * exchangeRate);
+
+    const productCost = Math.floor(price * quantity * exchangeRate);
+    let shippingCost = Math.floor(shipment * quantity);
+
+    if (offerEnabled && offerQuantity) {
+      // Additional shipping for free products
+      shippingCost += Math.floor(shipment * offerQuantity);
     }
-    
-    const productCost = Math.floor(price * effectiveQuantity * exchangeRate);
+
     const subtotal = productCost + shippingCost;
     const discountAmount = Math.floor((subtotal * discountPercentage) / 100);
-    
+
     return subtotal - discountAmount;
   };
 
   const getCartSubtotal = (): number => {
     return state.items.reduce((total, item) => {
-      const { price, quantity, offerEnabled, offer } = item;
+      const { price, quantity } = item;
       const { exchangeRate } = state.pricingSettings;
-      
-      let effectiveQuantity = quantity;
-      if (offerEnabled && offer) {
-        effectiveQuantity = Math.ceil(quantity / offer);
-      }
-      
-      return total + Math.floor(price * effectiveQuantity * exchangeRate);
+
+      return total + Math.floor(price * quantity * exchangeRate);
     }, 0);
   };
 
   const getCartShipping = (): number => {
     return state.items.reduce((total, item) => {
-      const { cc, quantity } = item;
-      const { exchangeRate } = state.pricingSettings;
-      return total + Math.floor(cc * quantity * exchangeRate);
+      const { shipment, quantity, offerEnabled, offerQuantity } = item;
+      let itemShipping = Math.floor(shipment * quantity);
+
+      if (offerEnabled && offerQuantity) {
+        itemShipping += Math.floor(shipment * offerQuantity);
+      }
+
+      return total + itemShipping;
     }, 0);
   };
 
@@ -247,8 +288,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const subtotal = getCartSubtotal();
     const shipping = getCartShipping();
     const total = subtotal + shipping;
-    const discountAmount = Math.floor((total * state.pricingSettings.discountPercentage) / 100);
+    const discountAmount = Math.floor(
+      (total * state.pricingSettings.discountPercentage) / 100,
+    );
     return total - discountAmount;
+  };
+
+  const getTotalCC = (): number => {
+    return state.items.reduce((total, item) => {
+      const { cc, quantity, offerEnabled, offerQuantity } = item;
+      let totalQuantity = quantity;
+
+      if (offerEnabled && offerQuantity) {
+        totalQuantity += offerQuantity;
+      }
+
+      return total + cc * totalQuantity;
+    }, 0);
   };
 
   return (
@@ -266,6 +322,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         getCartSubtotal,
         getCartShipping,
         getCartTotal,
+        getTotalCC,
       }}
     >
       {children}
@@ -276,7 +333,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 export function useCart() {
   const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 }

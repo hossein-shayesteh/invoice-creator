@@ -1,51 +1,52 @@
-'use client';
+"use client";
 
-import { InvoiceGenerator } from '@/components/InvoiceGenerator';
-import { PricingSettings } from '@/components/PricingSettings';
-import { ProductCard } from '@/components/ProductCard';
-import { ProductFilters } from '@/components/ProductFilters';
-import { ShoppingCart } from '@/components/ShoppingCart';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Product } from '@/types';
-import { ShoppingCart as CartIcon, FileText, Loader2, Package, Settings } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
+
+import {
+  ShoppingCart as CartIcon,
+  FileText,
+  Loader2,
+  Package,
+  Settings,
+} from "lucide-react";
+
+import { InvoiceGenerator } from "@/components/InvoiceGenerator";
+import { PricingSettings } from "@/components/PricingSettings";
+import { ProductCard } from "@/components/ProductCard";
+import { ProductFilters } from "@/components/ProductFilters";
+import { ShoppingCart } from "@/components/ShoppingCart";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { Product } from "@/types";
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
-  const [offerFilter, setOfferFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('name-asc');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("name-asc");
 
   // Load products from JSON
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const response = await fetch('/products.json');
+        const response = await fetch("/products.json");
         if (!response.ok) {
-          throw new Error('Failed to load products');
+          throw new Error("Failed to load products");
         }
         const data = await response.json();
         setProducts(data);
-        
-        // Set initial price range based on actual data
-        const maxPrice = Math.max(...data.map((p: Product) => p.price));
-        setPriceRange([0, maxPrice]);
       } catch (error) {
-        console.error('Error loading products:', error);
+        console.error("Error loading products:", error);
         // Fallback: try to load from src/app/products.json
         try {
-          const fallbackResponse = await fetch('/src/app/products.json');
+          const fallbackResponse = await fetch("/src/app/products.json");
           if (fallbackResponse.ok) {
             const fallbackData = await fallbackResponse.json();
             setProducts(fallbackData);
-            const maxPrice = Math.max(...fallbackData.map((p: Product) => p.price));
-            setPriceRange([0, maxPrice]);
           }
         } catch (fallbackError) {
-          console.error('Fallback loading failed:', fallbackError);
+          console.error("Fallback loading failed:", fallbackError);
         }
       } finally {
         setLoading(false);
@@ -57,36 +58,27 @@ export default function Home() {
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    const filtered = products.filter(product => {
+    const filtered = products.filter((product) => {
       // Search filter
-      const matchesSearch = 
-          product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  String(product.code).toLowerCase().includes(searchTerm.toLowerCase());
-      
-      // Price filter
-      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-      
-      // Offer filter
-      const matchesOffer = 
-        offerFilter === 'all' ||
-        (offerFilter === 'with-offers' && product.offer) ||
-        (offerFilter === 'no-offers' && !product.offer);
-      
-      return matchesSearch && matchesPrice && matchesOffer;
+      const matchesSearch =
+        product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(product.code).toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchesSearch;
     });
 
     // Sort products
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'name-asc':
+        case "name-asc":
           return a.product_name.localeCompare(b.product_name);
-        case 'name-desc':
+        case "name-desc":
           return b.product_name.localeCompare(a.product_name);
-        case 'price-asc':
+        case "price-asc":
           return a.price - b.price;
-        case 'price-desc':
+        case "price-desc":
           return b.price - a.price;
-        case 'code-asc':
+        case "code-asc":
           return String(a.code).localeCompare(String(b.code));
         default:
           return 0;
@@ -94,17 +86,13 @@ export default function Home() {
     });
 
     return filtered;
-  }, [products, searchTerm, priceRange, offerFilter, sortBy]);
-
-  const maxPrice = useMemo(() => {
-    return products.length > 0 ? Math.max(...products.map(p => p.price)) : 500;
-  }, [products]);
+  }, [products, searchTerm, sortBy]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin" />
           <p className="text-gray-600">Loading products...</p>
         </div>
       </div>
@@ -116,32 +104,45 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="mb-2 text-4xl font-bold text-gray-900">
             Product Ordering & Invoice System
           </h1>
           <p className="text-gray-600">
-            Browse products, manage your cart, and generate professional invoices
+            Browse products, manage your cart, and generate professional
+            invoices
           </p>
         </div>
 
         {/* Main Content */}
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="flex flex-wrap w-full">
-            <TabsTrigger value="products" className="flex-1 flex items-center justify-center gap-1 min-w-[120px]">
-              <Package className="w-4 h-4 sm:mr-0" />
+          <TabsList className="flex w-full flex-wrap">
+            <TabsTrigger
+              value="products"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-1"
+            >
+              <Package className="h-4 w-4 sm:mr-0" />
               <span className="hidden sm:inline">Products</span>
               <span className="sm:inline">({filteredProducts.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="cart" className="flex-1 flex items-center justify-center gap-1 min-w-[120px]">
-              <CartIcon className="w-4 h-4 sm:mr-0" />
+            <TabsTrigger
+              value="cart"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-1"
+            >
+              <CartIcon className="h-4 w-4 sm:mr-0" />
               <span className="sm:inline">Cart</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex-1 flex items-center justify-center gap-1 min-w-[120px]">
-              <Settings className="w-4 h-4 sm:mr-0" />
+            <TabsTrigger
+              value="settings"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-1"
+            >
+              <Settings className="h-4 w-4 sm:mr-0" />
               <span className="sm:inline">Settings</span>
             </TabsTrigger>
-            <TabsTrigger value="invoice" className="flex-1 flex items-center justify-center gap-1 min-w-[120px]">
-              <FileText className="w-4 h-4 sm:mr-0" />
+            <TabsTrigger
+              value="invoice"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-1"
+            >
+              <FileText className="h-4 w-4 sm:mr-0" />
               <span className="sm:inline">Invoice</span>
             </TabsTrigger>
           </TabsList>
@@ -151,20 +152,15 @@ export default function Home() {
             <ProductFilters
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
-              priceRange={priceRange}
-              onPriceRangeChange={setPriceRange}
-              maxPrice={maxPrice}
-              offerFilter={offerFilter}
-              onOfferFilterChange={setOfferFilter}
               sortBy={sortBy}
               onSortChange={setSortBy}
             />
 
             {filteredProducts.length === 0 ? (
               <Card>
-                <CardContent className="text-center py-12">
-                  <Package className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <CardContent className="py-12 text-center">
+                  <Package className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+                  <h3 className="mb-2 text-lg font-medium text-gray-900">
                     No products found
                   </h3>
                   <p className="text-gray-600">
@@ -173,9 +169,9 @@ export default function Home() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredProducts.map((product) => (
-                  <ProductCard key={product.code} product={product} />
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             )}
