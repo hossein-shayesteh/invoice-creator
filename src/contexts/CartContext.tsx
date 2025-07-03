@@ -8,7 +8,9 @@ import {
   useReducer,
 } from "react";
 
-import { CartItem, PricingSettings, Product } from "@/types";
+import { Product } from "@prisma/client";
+
+import { CartItem, PricingSettings } from "@/types";
 
 interface CartState {
   items: CartItem[];

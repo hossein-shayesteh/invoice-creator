@@ -31,7 +31,7 @@ export const handleSignIn = async (formData: FormData) => {
   } catch (error) {
     // Check if it's a redirect error (which is expected)
     if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
-      throw error; // Re-throw redirect errors
+      throw error;
     }
 
     redirect("/sign-in?error=CredentialsSignin");

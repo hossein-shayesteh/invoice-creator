@@ -1,103 +1,21 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
-
 import {
   ShoppingCart as CartIcon,
   FileText,
-  Loader2,
   Package,
   Settings,
 } from "lucide-react";
 
+import { getAllProducts } from "@/lib/product-services";
+
 import { InvoiceGenerator } from "@/components/InvoiceGenerator";
 import { PricingSettings } from "@/components/PricingSettings";
-import { ProductCard } from "@/components/ProductCard";
-import { ProductFilters } from "@/components/ProductFilters";
 import { ShoppingCart } from "@/components/ShoppingCart";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Product } from "@/types";
+import ProductSection from "@/app/(main)/dashboard/_components/product-section";
 
-export default function Dashboard() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("name-asc");
-
-  // Load products from JSON
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const response = await fetch("/products.json");
-        if (!response.ok) {
-          throw new Error("Failed to load products");
-        }
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error("Error loading products:", error);
-        // Fallback: try to load from src/app/products.json
-        try {
-          const fallbackResponse = await fetch("/src/app/products.json");
-          if (fallbackResponse.ok) {
-            const fallbackData = await fallbackResponse.json();
-            setProducts(fallbackData);
-          }
-        } catch (fallbackError) {
-          console.error("Fallback loading failed:", fallbackError);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProducts();
-  }, []);
-
-  // Filter and sort products
-  const filteredProducts = useMemo(() => {
-    const filtered = products.filter((product) => {
-      // Search filter
-      const matchesSearch =
-        product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        String(product.code).toLowerCase().includes(searchTerm.toLowerCase());
-
-      return matchesSearch;
-    });
-
-    // Sort products
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "name-asc":
-          return a.product_name.localeCompare(b.product_name);
-        case "name-desc":
-          return b.product_name.localeCompare(a.product_name);
-        case "price-asc":
-          return a.price - b.price;
-        case "price-desc":
-          return b.price - a.price;
-        case "code-asc":
-          return String(a.code).localeCompare(String(b.code));
-        default:
-          return 0;
-      }
-    });
-
-    return filtered;
-  }, [products, searchTerm, sortBy]);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin" />
-          <p className="text-gray-600">Loading products...</p>
-        </div>
-      </div>
-    );
-  }
+const DashboardPage = async () => {
+  const products = await getAllProducts();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -122,7 +40,6 @@ export default function Dashboard() {
             >
               <Package className="h-4 w-4 sm:mr-0" />
               <span className="hidden sm:inline">Products</span>
-              <span className="sm:inline">({filteredProducts.length})</span>
             </TabsTrigger>
             <TabsTrigger
               value="cart"
@@ -149,32 +66,7 @@ export default function Dashboard() {
 
           {/* Products Tab */}
           <TabsContent value="products" className="space-y-6">
-            <ProductFilters
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-            />
-
-            {filteredProducts.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Package className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-                  <h3 className="mb-2 text-lg font-medium text-gray-900">
-                    No products found
-                  </h3>
-                  <p className="text-gray-600">
-                    Try adjusting your search or filter criteria
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
+            <ProductSection products={products} />
           </TabsContent>
 
           {/* Cart Tab */}
@@ -195,4 +87,5 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
+};
+export default DashboardPage;

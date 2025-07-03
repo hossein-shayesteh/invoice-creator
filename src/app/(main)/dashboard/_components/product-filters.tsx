@@ -15,16 +15,16 @@ import {
 
 interface ProductFiltersProps {
   searchTerm: string;
-  onSearchChange: (value: string) => void;
+  SearchTermAction: (value: string) => void;
   sortBy: string;
-  onSortChange: (value: string) => void;
+  SortByAction: (value: string) => void;
 }
 
 export function ProductFilters({
   searchTerm,
-  onSearchChange,
+  SearchTermAction,
   sortBy,
-  onSortChange,
+  SortByAction,
 }: ProductFiltersProps) {
   return (
     <Card className="mb-6">
@@ -45,14 +45,14 @@ export function ProductFilters({
               type="text"
               placeholder="Search by product name or code..."
               value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
+              onChange={(e) => SearchTermAction(e.target.value)}
               className="pl-10"
             />
           </div>
         </div>
         <div className="space-y-2">
           <Label>Sort By</Label>
-          <Select value={sortBy} onValueChange={onSortChange}>
+          <Select value={sortBy} onValueChange={SortByAction}>
             <SelectTrigger>
               <SelectValue placeholder="Sort products" />
             </SelectTrigger>

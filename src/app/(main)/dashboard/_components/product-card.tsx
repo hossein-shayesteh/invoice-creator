@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { useCart } from "@/contexts/CartContext";
+import { Product } from "@prisma/client";
 import { BadgePercent, CheckCircle, Package, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 
@@ -18,8 +19,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-
-import { Product } from "@/types";
 
 interface ProductCardProps {
   product: Product;
