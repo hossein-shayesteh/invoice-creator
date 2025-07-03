@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/contexts/cart-context";
 import { DollarSign, Percent, Settings } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

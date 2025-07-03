@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/contexts/cart-context";
 import { Product } from "@prisma/client";
 import { BadgePercent, CheckCircle, Package, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";

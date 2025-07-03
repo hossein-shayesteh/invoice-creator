@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/contexts/cart-context";
 import { format } from "date-fns";
 import { Download, FileText, Printer } from "lucide-react";
 import { toast } from "sonner";

@@ -7,12 +7,12 @@ import {
 
 import { getAllProducts } from "@/lib/product-services";
 
-import { InvoiceGenerator } from "@/components/InvoiceGenerator";
-import { PricingSettings } from "@/components/PricingSettings";
-import { ShoppingCart } from "@/components/ShoppingCart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { InvoiceGenerator } from "@/app/(main)/dashboard/_components/invoice-generator";
+import { PricingSettings } from "@/app/(main)/dashboard/_components/pricing-settings";
 import ProductSection from "@/app/(main)/dashboard/_components/product-section";
+import { ShoppingCart } from "@/app/(main)/dashboard/_components/shopping-cart";
 
 const DashboardPage = async () => {
   const products = await getAllProducts();
