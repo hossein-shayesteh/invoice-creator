@@ -1,81 +1,140 @@
 generator client {
   provider = "prisma-client-js"
-  // output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "cockroachdb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 enum Role {
   USER
   ADMIN
-  MODERATOR
 }
 
 model User {
   id            String    @id @default(cuid())
   name          String?
-  email         String?   @unique
-  username      String?   @unique
-  password      String?
+  email         String?   @unique @db.VarChar(255)
+  username      String?   @unique @db.VarChar(50)
+  password      String?   @db.VarChar(255)
   role          Role      @default(USER)
-  emailVerified DateTime?
-  image         String?
+  emailVerified DateTime? @db.Timestamptz(3)
+  image         String?   @db.VarChar(500)
   accounts      Account[]
   sessions      Session[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  invoices      Invoice[]
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
 
   @@index([email])
   @@index([username])
   @@index([createdAt])
+  @@index([role])
+  @@map("users")
 }
 
 model Account {
   id                String   @id @default(cuid())
   userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  type              String   @db.VarChar(50)
+  provider          String   @db.VarChar(50)
+  providerAccountId String   @db.VarChar(255)
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
   expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
+  token_type        String?  @db.VarChar(50)
+  scope             String?  @db.VarChar(500)
+  id_token          String?  @db.Text
+  session_state     String?  @db.VarChar(500)
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime @updatedAt @db.Timestamptz(3)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
   @@index([provider])
+  @@index([createdAt])
+  @@map("accounts")
 }
 
 model Session {
   id           String   @id @default(cuid())
-  sessionToken String   @unique
+  sessionToken String   @unique @db.VarChar(255)
   userId       String
-  expires      DateTime
+  expires      DateTime @db.Timestamptz(3)
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
 
   @@index([userId])
   @@index([expires])
+  @@index([sessionToken])
+  @@map("sessions")
 }
 
 model VerificationToken {
   id         String   @id @default(cuid())
-  identifier String
-  token      String
-  expires    DateTime
-  createdAt  DateTime @default(now())
+  identifier String   @db.VarChar(255)
+  token      String   @db.VarChar(255)
+  expires    DateTime @db.Timestamptz(3)
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
 
   @@unique([identifier, token])
   @@index([identifier])
   @@index([expires])
+  @@index([token])
+  @@map("verification_tokens")
+}
+
+model Product {
+  id           String        @id @default(cuid())
+  code         String        @unique
+  product_name String
+  cc           Float
+  price        Float
+  shipment     Float
+  invoiceItems InvoiceItem[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([code])
+  @@index([product_name])
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  invoiceNumber   String        @unique
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items           InvoiceItem[]
+  subtotal        Float
+  shipping        Float
+  total           Float
+  totalCC         Float
+  exchangeRate    Float
+  discountPercent Float         @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([invoiceNumber])
+  @@index([createdAt])
+}
+
+model InvoiceItem {
+  id            String   @id @default(cuid())
+  invoiceId     String
+  invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity      Int
+  offerEnabled  Boolean  @default(false)
+  offerQuantity Int?     @default(0)
+  unitPrice     Float
+  totalPrice    Float
+  createdAt     DateTime @default(now())
+
+  @@index([invoiceId])
+  @@index([productId])
 }

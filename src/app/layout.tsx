@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
 import type { Metadata } from "next";
+import SessionProviderWrapper from "@/components/providers/SessionProviderWrapper";
 
 import { Toaster } from "@/components/ui/sonner";
 
@@ -32,10 +33,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <CartProvider>
-          {children}
-          <Toaster />
-        </CartProvider>
+        <SessionProviderWrapper>
+          <CartProvider>
+            {children}
+            <Toaster />
+          </CartProvider>
+        </SessionProviderWrapper>
       </body>
     </html>
   );

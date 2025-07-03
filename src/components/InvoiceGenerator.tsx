@@ -1,8 +1,13 @@
 "use client";
 
+import { useState } from "react";
+
 import { useCart } from "@/contexts/CartContext";
 import { format } from "date-fns";
 import { Download, FileText, Printer } from "lucide-react";
+import { toast } from "sonner";
+
+import { useAuth } from "@/hooks/use-auth";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +23,9 @@ export function InvoiceGenerator() {
     getTotalCC,
     clearCart,
   } = useCart();
+
+  const { session } = useAuth();
+  const [isSaving, setIsSaving] = useState(false);
 
   const { items, pricingSettings } = state;
 
@@ -403,17 +411,94 @@ export function InvoiceGenerator() {
       discount: pricingSettings.discountPercentage,
     };
 
-    // Save to localStorage for order history
-    const existingInvoices = JSON.parse(
-      localStorage.getItem("invoices") || "[]",
-    );
-    existingInvoices.push(invoiceData);
-    localStorage.setItem("invoices", JSON.stringify(existingInvoices));
+    // Save to database and localStorage
+    setIsSaving(true);
 
-    // Clear cart after generating invoice
-    clearCart();
+    // Prepare invoice data for API
+    const invoiceItemsData = items.map((item) => {
+      const productCost = Math.floor(
+        item.price * item.quantity * pricingSettings.exchangeRate,
+      );
+      let shippingCost = Math.floor(item.shipment * item.quantity);
 
-    alert(`Invoice ${invoiceData.id} generated successfully!`);
+      if (item.offerEnabled && item.offerQuantity) {
+        shippingCost += Math.floor(item.shipment * item.offerQuantity);
+      }
+
+      const itemTotal = productCost + shippingCost;
+      const discountAmount = Math.floor(
+        (itemTotal * pricingSettings.discountPercentage) / 100,
+      );
+      const finalTotal = itemTotal - discountAmount;
+
+      const totalQuantity =
+        item.quantity +
+        (item.offerEnabled && item.offerQuantity ? item.offerQuantity : 0);
+
+      return {
+        productId: item.id,
+        productName: item.product_name,
+        productCode: item.code,
+        quantity: item.quantity,
+        freeQuantity:
+          item.offerEnabled && item.offerQuantity ? item.offerQuantity : 0,
+        unitPrice: item.price,
+        ccPoints: item.cc * totalQuantity,
+        shipment: item.shipment,
+        subtotal: finalTotal,
+      };
+    });
+
+    const apiInvoiceData = {
+      invoiceNumber: invoiceData.id,
+      subtotal: getCartSubtotal(),
+      shipping: getCartShipping(),
+      discount: Math.floor(
+        ((getCartSubtotal() + getCartShipping()) *
+          pricingSettings.discountPercentage) /
+          100,
+      ),
+      total: getCartTotal(),
+      totalCC: getTotalCC(),
+      exchangeRate: pricingSettings.exchangeRate,
+      discountPercentage: pricingSettings.discountPercentage,
+      items: invoiceItemsData,
+    };
+
+    // Save to API
+    fetch("/api/invoices", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(apiInvoiceData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to save invoice");
+        }
+        return response.json();
+      })
+      .then(() => {
+        // Save to localStorage for order history
+        const existingInvoices = JSON.parse(
+          localStorage.getItem("invoices") || "[]",
+        );
+        existingInvoices.push(invoiceData);
+        localStorage.setItem("invoices", JSON.stringify(existingInvoices));
+
+        // Clear cart after generating invoice
+        clearCart();
+
+        toast.success(`Invoice ${invoiceData.id} generated successfully!`);
+      })
+      .catch((error) => {
+        console.error("Error saving invoice:", error);
+        toast.error("Failed to save invoice. Please try again.");
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
   const invoiceNumber = generateInvoiceNumber();
@@ -433,6 +518,11 @@ export function InvoiceGenerator() {
           <div className="border-b pb-4 text-center">
             <h1 className="text-2xl font-bold text-gray-900">INVOICE</h1>
             <p className="mt-2 text-gray-600">Product Order Invoice</p>
+            {session?.user && (
+              <p className="mt-1 text-sm text-gray-500">
+                Created by: {session.user.name || session.user.username}
+              </p>
+            )}
           </div>
 
           {/* Invoice Details */}
@@ -625,9 +715,22 @@ export function InvoiceGenerator() {
             <Download className="mr-2 h-4 w-4" />
             Download PDF
           </Button>
-          <Button onClick={handleGenerateInvoice} className="flex-1">
-            <FileText className="mr-2 h-4 w-4" />
-            Generate Invoice
+          <Button
+            onClick={handleGenerateInvoice}
+            className="flex-1"
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <>
+                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                Saving...
+              </>
+            ) : (
+              <>
+                <FileText className="mr-2 h-4 w-4" />
+                Generate Invoice
+              </>
+            )}
           </Button>
         </div>
       </CardContent>

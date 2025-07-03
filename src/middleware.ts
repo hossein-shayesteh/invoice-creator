@@ -5,15 +5,15 @@ import { Role } from "@prisma/client";
 
 const protectedRoutes = ["/dashboard"];
 
-const adminRoutes = ["/users"];
+const adminRoutes = ["/admin"];
 
 export default async function middleware(request: NextRequest) {
   const session = await auth();
   const pathname = request.nextUrl.pathname;
   const isAdmin = session?.user.role === Role.ADMIN;
   // // const authCookie =
-  // //   request.cookies.get("authjs.session-token")?.value ||
-  // //   request.cookies.get("__Secure-authjs.session-tokenn")?.value;
+  //   request.cookies.get("authjs.session-token")?.value ||
+  //   request.cookies.get("__Secure-authjs.session-tokenn")?.value;
 
   // If user is authenticated and trying to access protected route, redirect to sign-in.
   if (!session?.user && protectedRoutes.includes(pathname))
