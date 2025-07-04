@@ -6,6 +6,12 @@ import { Product } from "@prisma/client";
 import { MoreHorizontal, Pencil, Plus, Trash } from "lucide-react";
 import { toast } from "sonner";
 
+import { useAction } from "@/hooks/use-action";
+
+import { createProduct } from "@/lib/actions/create-product";
+import { deleteProduct } from "@/lib/actions/delete-product";
+import { updateProduct } from "@/lib/actions/update-product";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -51,6 +57,37 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
     shipment: "0",
   });
 
+  const { execute: executeDeleteProduct } = useAction(deleteProduct, {
+    onSuccess: async (_date, message) => {
+      toast.success(message);
+    },
+    onError: async (error) => {
+      toast.error(error);
+    },
+  });
+
+  const { execute: executeCreateProduct } = useAction(createProduct, {
+    onSuccess: async (_date, message) => {
+      toast.success(message);
+      resetProductForm();
+      setProductDialogOpen(false);
+    },
+    onError: async (error) => {
+      toast.error(error);
+    },
+  });
+
+  const { execute: executeUpdateProduct } = useAction(updateProduct, {
+    onSuccess: async (_date, message) => {
+      toast.success(message);
+      resetProductForm();
+      setProductDialogOpen(false);
+    },
+    onError: async (error) => {
+      toast.error(error);
+    },
+  });
+
   // Reset product form
   const resetProductForm = () => {
     setProductFormData({
@@ -86,62 +123,20 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      let response;
-
-      if (editingProduct) {
-        // Update existing product
-        response = await fetch(`/api/products/${editingProduct.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(productFormData),
-        });
-      } else {
-        // Create new product
-        response = await fetch("/api/products", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(productFormData),
-        });
-      }
-
-      if (response.ok) {
-        toast.success(
-          editingProduct
-            ? "Product updated successfully"
-            : "Product created successfully",
-        );
-        setProductDialogOpen(false);
-        resetProductForm();
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || "Failed to save product");
-      }
-    } catch (error) {
-      console.error("Error saving product:", error);
-      toast.error("Failed to save product");
+    if (editingProduct) {
+      // Update existing product
+      await executeUpdateProduct({ id: editingProduct.id, ...productFormData });
+    } else {
+      // Create new product
+      await executeCreateProduct({ ...productFormData });
     }
   };
 
   // Delete product
-  const deleteProduct = async (productId: string | number) => {
+  const handleDeleteProduct = async (productId: string) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
-    try {
-      const response = await fetch(`/api/products/${productId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        toast.success("Product deleted successfully");
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || "Failed to delete product");
-      }
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      toast.error("Failed to delete product");
-    }
+    await executeDeleteProduct({ id: productId });
   };
 
   if (!products)
@@ -309,7 +304,7 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                             Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => deleteProduct(product.id)}
+                            onClick={() => handleDeleteProduct(product.id)}
                             className="text-red-600"
                           >
                             <Trash className="mr-2 h-4 w-4" />

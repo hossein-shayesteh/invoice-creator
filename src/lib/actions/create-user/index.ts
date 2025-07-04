@@ -52,7 +52,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
   } catch (e) {
     const error = e as Error;
-    return { error: error.message };
+    return { error: error.message || "Failed to create user" };
   }
 
   revalidatePath(`/admin`);

@@ -5,8 +5,8 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { Role } from "@prisma/client";
 
-import { deleteInvoiceSchema } from "@/lib/actions/delete-invoice/schema";
-import { InputType, ReturnType } from "@/lib/actions/delete-invoice/types";
+import { deleteProductSchema } from "@/lib/actions/delete-product/schema";
+import { InputType, ReturnType } from "@/lib/actions/delete-product/types";
 import { createAction } from "@/lib/create-action";
 import db from "@/lib/prisma";
 
@@ -18,29 +18,29 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   const { id } = data;
 
   try {
-    // Check if invoice exists
-    const existingInvoice = await db.invoice.findUnique({
+    // Check if product exists
+    const existingProduct = await db.product.findUnique({
       where: { id },
     });
 
-    if (!existingInvoice) {
-      throw new Error("Invoice not found");
+    if (!existingProduct) {
+      throw new Error(`Product not found`);
     }
 
-    // Delete invoice (cascade will delete invoice items)
-    await db.invoice.delete({
+    // Delete product
+    await db.product.delete({
       where: { id },
     });
   } catch (e) {
     const error = e as Error;
-    return { error: error.message || "Failed to delete invoice" };
+    return { error: error.message || "Failed to delete product" };
   }
 
   revalidatePath(`/admin`);
 
   return {
-    message: "Invoice deleted successfully",
+    message: "Product deleted successfully",
   };
 };
 
-export const deleteInvoice = createAction(deleteInvoiceSchema, handler);
+export const deleteProduct = createAction(deleteProductSchema, handler);
