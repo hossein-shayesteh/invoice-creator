@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { Product } from "@prisma/client";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -22,8 +23,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import { Product } from "@/types";
 
 export default function ProductManagement() {
   const [products, setProducts] = useState<Product[]>([]);
