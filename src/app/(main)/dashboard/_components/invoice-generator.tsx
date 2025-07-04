@@ -427,24 +427,11 @@ export function InvoiceGenerator() {
     });
 
     // Colors matching your print CSS
-    const primaryColor = [79, 70, 229]; // #4f46e5
     const borderColor = [229, 231, 235]; // #e5e7eb
     const headingColor = [17, 24, 39]; // #111827
     const textColor = [55, 65, 81]; // #374151
     const lightBg = [249, 250, 251]; // #f9fafb
     const grayText = [107, 114, 128]; // #6b7280
-
-    // Helper function to convert hex to RGB
-    const hexToRgb = (hex) => {
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result
-        ? [
-            parseInt(result[1], 16),
-            parseInt(result[2], 16),
-            parseInt(result[3], 16),
-          ]
-        : null;
-    };
 
     // Invoice container border (matching your print CSS)
     doc.setDrawColor(...borderColor);
@@ -575,7 +562,7 @@ export function InvoiceGenerator() {
     doc.setFontSize(7);
     doc.setTextColor(...textColor);
 
-    items.forEach((item, index) => {
+    items.forEach((item, _index) => {
       // Check if we need a new page
       if (currentY > 240) {
         doc.addPage();
