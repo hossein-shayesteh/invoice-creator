@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { useCart } from "@/contexts/cart-context";
 import { format } from "date-fns";
+import { jsPDF } from "jspdf";
 import { Download, FileText, Printer } from "lucide-react";
 import { toast } from "sonner";
 
+import { useAction } from "@/hooks/use-action";
 import { useAuth } from "@/hooks/use-auth";
+
+import { createInvoice } from "@/lib/actions/create-invoice";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,8 +30,22 @@ export function InvoiceGenerator() {
 
   const { session } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
+  const invoiceContentRef = useRef<HTMLDivElement>(null);
 
   const { items, pricingSettings } = state;
+
+  const { execute: executeCreateInvoice } = useAction(createInvoice, {
+    onSuccess: async (_data, message) => {
+      toast.success(message);
+      clearCart();
+    },
+    onError: async (err) => {
+      toast.error(err);
+    },
+    onComplete: async () => {
+      setIsSaving(false);
+    },
+  });
 
   if (items.length === 0) {
     return (
@@ -393,12 +411,339 @@ export function InvoiceGenerator() {
   };
 
   const handleDownloadPDF = () => {
-    // For a real implementation, you would use a library like jsPDF or react-pdf
-    // For now, we'll trigger the print dialog which allows saving as PDF
-    handlePrint();
+    if (!invoiceContentRef.current) return;
+
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    // Set document properties
+    doc.setProperties({
+      title: `Invoice ${invoiceNumber}`,
+      subject: "Product Order Invoice",
+      creator: session?.user?.name || session?.user?.username || "User",
+    });
+
+    // Colors matching your print CSS
+    const primaryColor = [79, 70, 229]; // #4f46e5
+    const borderColor = [229, 231, 235]; // #e5e7eb
+    const headingColor = [17, 24, 39]; // #111827
+    const textColor = [55, 65, 81]; // #374151
+    const lightBg = [249, 250, 251]; // #f9fafb
+    const grayText = [107, 114, 128]; // #6b7280
+
+    // Helper function to convert hex to RGB
+    const hexToRgb = (hex) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result
+        ? [
+            parseInt(result[1], 16),
+            parseInt(result[2], 16),
+            parseInt(result[3], 16),
+          ]
+        : null;
+    };
+
+    // Invoice container border (matching your print CSS)
+    doc.setDrawColor(...borderColor);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(10, 10, 190, 277, 2, 2, "S");
+
+    // Invoice header with light background
+    doc.setFillColor(...lightBg);
+    doc.rect(10, 10, 190, 35, "F");
+    doc.setDrawColor(...borderColor);
+    doc.line(10, 45, 200, 45);
+
+    // Header content
+    doc.setTextColor(...headingColor);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text("INVOICE", 105, 25, { align: "center" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(...grayText);
+    doc.text("Product Order Invoice", 105, 33, { align: "center" });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(...grayText);
+    doc.text(`${session?.user.name}`, 105, 40, { align: "center" });
+
+    // Invoice details section
+    let currentY = 55;
+
+    // Left column - Invoice Details
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(...headingColor);
+    doc.text("INVOICE DETAILS", 15, currentY);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...textColor);
+    doc.text(`Invoice #: ${invoiceNumber}`, 15, currentY + 6);
+    doc.text(`Date: ${currentDate}`, 15, currentY + 12);
+    doc.text(
+      `Exchange Rate: 1 AED = ${pricingSettings.exchangeRate.toLocaleString()} IRR`,
+      15,
+      currentY + 18,
+    );
+
+    // Right column - Order Summary
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(...headingColor);
+    doc.text("ORDER SUMMARY", 110, currentY);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...textColor);
+    doc.text(
+      `Total Items: ${items.reduce((sum, item) => sum + item.quantity, 0)}`,
+      110,
+      currentY + 6,
+    );
+    doc.text(`Unique Products: ${items.length}`, 110, currentY + 12);
+
+    if (pricingSettings.discountPercentage > 0) {
+      doc.text(
+        `Discount: ${pricingSettings.discountPercentage}%`,
+        110,
+        currentY + 18,
+      );
+    }
+
+    currentY += 35;
+
+    // Order Items title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(...headingColor);
+    doc.text("Order Items", 15, currentY);
+
+    currentY += 8;
+
+    // Table setup (matching your print table)
+    const tableHeaders = [
+      "Code",
+      "Product",
+      "Qty",
+      "Unit Price (AED)",
+      "CC Points",
+      "Shipment (IRR)",
+      "Offer",
+      "Total (IRR)",
+    ];
+    const columnWidths = [20, 35, 15, 22, 18, 25, 15, 25];
+    const columnX = [15, 35, 70, 85, 107, 125, 150, 165];
+
+    // Table header background
+    doc.setFillColor(...lightBg);
+    doc.rect(10, currentY - 2, 190, 8, "F");
+
+    // Table header borders
+    doc.setDrawColor(...borderColor);
+    doc.line(10, currentY - 2, 200, currentY - 2); // Top border
+    doc.line(10, currentY + 6, 200, currentY + 6); // Bottom border
+
+    // Table headers
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.setTextColor(...headingColor);
+
+    tableHeaders.forEach((header, index) => {
+      const align = index <= 1 ? "left" : index === 6 ? "center" : "right";
+      let x = columnX[index];
+
+      if (align === "right") {
+        x = columnX[index] + columnWidths[index] - 5;
+      } else if (align === "center") {
+        x = columnX[index] + columnWidths[index] / 2;
+      }
+
+      doc.text(header, x, currentY + 2, { align });
+    });
+
+    currentY += 10;
+
+    // Table rows
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(...textColor);
+
+    items.forEach((item, index) => {
+      // Check if we need a new page
+      if (currentY > 240) {
+        doc.addPage();
+        currentY = 20;
+      }
+
+      // Calculate values exactly like in your print version
+      const productCost = Math.floor(
+        item.price * item.quantity * pricingSettings.exchangeRate,
+      );
+      let shippingCost = Math.floor(item.shipment * item.quantity);
+
+      if (item.offerEnabled && item.offerQuantity) {
+        shippingCost += Math.floor(item.shipment * item.offerQuantity);
+      }
+
+      const itemTotal = productCost + shippingCost;
+      const discountAmount = Math.floor(
+        (itemTotal * pricingSettings.discountPercentage) / 100,
+      );
+      const finalTotal = itemTotal - discountAmount;
+
+      const totalQuantity =
+        item.quantity +
+        (item.offerEnabled && item.offerQuantity ? item.offerQuantity : 0);
+      const totalCC = item.cc * totalQuantity;
+
+      // Row border
+      doc.setDrawColor(...borderColor);
+      doc.line(10, currentY + 6, 200, currentY + 6);
+
+      // Row data
+      const rowData = [
+        item.code,
+        item.product_name.length > 20
+          ? item.product_name.substring(0, 17) + "..."
+          : item.product_name,
+        item.quantity.toString(),
+        item.price.toFixed(2),
+        totalCC.toFixed(3),
+        item.shipment.toLocaleString(),
+        item.offerEnabled && item.offerQuantity
+          ? `+${item.offerQuantity} Free`
+          : "-",
+        finalTotal.toLocaleString(),
+      ];
+
+      // Draw row data
+      rowData.forEach((data, colIndex) => {
+        const align =
+          colIndex <= 1 ? "left" : colIndex === 6 ? "center" : "right";
+        let x = columnX[colIndex];
+
+        if (align === "right") {
+          x = columnX[colIndex] + columnWidths[colIndex] - 5;
+        } else if (align === "center") {
+          x = columnX[colIndex] + columnWidths[colIndex] / 2;
+        }
+
+        // Special formatting for offers (red badge style)
+        if (colIndex === 6 && item.offerEnabled && item.offerQuantity) {
+          doc.setTextColor(185, 28, 28); // Red color for offer badge
+          doc.text(data, x, currentY + 3, { align });
+          doc.setTextColor(...textColor);
+        } else {
+          doc.text(data, x, currentY + 3, { align });
+        }
+      });
+
+      // Add quantity details for offers (green text)
+      if (item.offerEnabled && item.offerQuantity) {
+        doc.setTextColor(4, 120, 87); // Green color
+        doc.setFontSize(6);
+        doc.text(`(+${item.offerQuantity} free)`, columnX[2], currentY + 8);
+        doc.setFontSize(7);
+        doc.setTextColor(...textColor);
+      }
+
+      currentY += 10;
+    });
+
+    // Totals section (matching your print CSS)
+    currentY += 5;
+    doc.setDrawColor(...borderColor);
+    doc.line(10, currentY, 200, currentY); // Top border for totals
+    currentY += 8;
+
+    // Totals with right alignment
+    const totalsX = 140;
+    const valuesX = 195;
+
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+
+    // Subtotal
+    doc.text("Subtotal:", totalsX, currentY);
+    doc.text(`${getCartSubtotal().toLocaleString()} IRR`, valuesX, currentY, {
+      align: "right",
+    });
+
+    // Shipping
+    currentY += 6;
+    doc.text("Shipping:", totalsX, currentY);
+    doc.text(`${getCartShipping().toLocaleString()} IRR`, valuesX, currentY, {
+      align: "right",
+    });
+
+    // Total CC Points (blue color)
+    currentY += 6;
+    doc.setTextColor(37, 99, 235); // Blue color
+    doc.text("Total CC Points:", totalsX, currentY);
+    doc.text(`${getTotalCC().toFixed(3)}`, valuesX, currentY, {
+      align: "right",
+    });
+    doc.setTextColor(...textColor);
+
+    // Discount (if applicable, green color)
+    if (pricingSettings.discountPercentage > 0) {
+      currentY += 6;
+      doc.setTextColor(4, 120, 87); // Green color
+      doc.text(
+        `Discount (${pricingSettings.discountPercentage}%):`,
+        totalsX,
+        currentY,
+      );
+      doc.text(
+        `-${Math.floor(
+          ((getCartSubtotal() + getCartShipping()) *
+            pricingSettings.discountPercentage) /
+            100,
+        ).toLocaleString()} IRR`,
+        valuesX,
+        currentY,
+        { align: "right" },
+      );
+      doc.setTextColor(...textColor);
+    }
+
+    // Total line
+    currentY += 6;
+    doc.setDrawColor(...borderColor);
+    doc.setLineWidth(0.5);
+    doc.line(totalsX, currentY, valuesX, currentY);
+
+    // Final Total
+    currentY += 8;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...headingColor);
+    doc.text("Total Amount:", totalsX, currentY);
+    doc.text(`${getCartTotal().toLocaleString()} IRR`, valuesX, currentY, {
+      align: "right",
+    });
+
+    // Footer
+    currentY = 280;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...grayText);
+    doc.text("Thank you for your business!", 105, currentY, {
+      align: "center",
+    });
+
+    // Save the PDF
+    doc.save(`Invoice-${invoiceNumber}.pdf`);
   };
 
-  const handleGenerateInvoice = () => {
+  const handleGenerateInvoice = async () => {
     const invoiceData = {
       id: generateInvoiceNumber(),
       date: new Date().toISOString(),
@@ -465,40 +810,7 @@ export function InvoiceGenerator() {
       items: invoiceItemsData,
     };
 
-    // Save to API
-    fetch("/api/invoices", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(apiInvoiceData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to save invoice");
-        }
-        return response.json();
-      })
-      .then(() => {
-        // Save to localStorage for order history
-        const existingInvoices = JSON.parse(
-          localStorage.getItem("invoices") || "[]",
-        );
-        existingInvoices.push(invoiceData);
-        localStorage.setItem("invoices", JSON.stringify(existingInvoices));
-
-        // Clear cart after generating invoice
-        clearCart();
-
-        toast.success(`Invoice ${invoiceData.id} generated successfully!`);
-      })
-      .catch((error) => {
-        console.error("Error saving invoice:", error);
-        toast.error("Failed to save invoice. Please try again.");
-      })
-      .finally(() => {
-        setIsSaving(false);
-      });
+    await executeCreateInvoice({ ...apiInvoiceData });
   };
 
   const invoiceNumber = generateInvoiceNumber();
@@ -513,7 +825,7 @@ export function InvoiceGenerator() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div id="invoice-content" className="space-y-6">
+        <div id="invoice-content" ref={invoiceContentRef} className="space-y-6">
           {/* Invoice Header */}
           <div className="border-b pb-4 text-center">
             <h1 className="text-2xl font-bold text-gray-900">INVOICE</h1>

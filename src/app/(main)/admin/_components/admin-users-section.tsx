@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 
 import { User } from "@prisma/client";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { FileText, MoreHorizontal, Plus, Trash } from "lucide-react";
 import { toast } from "sonner";
 
@@ -92,11 +93,12 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
   const { execute: executeDeleteInvoice } = useAction(deleteInvoice, {
     onSuccess: async (_data, message) => {
       resetUserForm();
-      setUserDialogOpen(false);
+      setUserDetailsOpen(false);
       toast.success(message);
     },
     onError: async (error) => {
       toast.error(error);
+      setUserDetailsOpen(false);
     },
   });
 
@@ -327,13 +329,13 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
 
       {/* User Details Dialog */}
       <Dialog open={userDetailsOpen} onOpenChange={setUserDetailsOpen}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className={"sm:max-w-4xl"}>
           <DialogHeader>
             <DialogTitle>User Details</DialogTitle>
           </DialogHeader>
 
           {selectedUser && (
-            <div className="space-y-6">
+            <div className="w-full space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="mb-2 font-semibold">User Information</h3>
@@ -367,41 +369,47 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                 {userInvoices.length === 0 ? (
                   <p className="text-gray-500">No invoices found</p>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Invoice #</TableHead>
-                        <TableHead className="text-right">Total</TableHead>
-                        <TableHead className="text-right">CC Points</TableHead>
-                        <TableHead>Created</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {userInvoices.map((invoice) => (
-                        <TableRow key={invoice.id}>
-                          <TableCell>{invoice.invoiceNumber}</TableCell>
-                          <TableCell className="text-right">
-                            {invoice.total.toLocaleString()} IRR
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {invoice.totalCC.toFixed(3)}
-                          </TableCell>
-                          <TableCell>{formatDate(invoice.createdAt)}</TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteInvoice(invoice.id)}
-                              className="text-red-600"
-                            >
-                              <Trash className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
+                  <ScrollArea className={"h-[300px] w-full"}>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Invoice #</TableHead>
+                          <TableHead className="text-right">Total</TableHead>
+                          <TableHead className="text-right">
+                            CC Points
+                          </TableHead>
+                          <TableHead>Created</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {userInvoices.map((invoice) => (
+                          <TableRow key={invoice.id}>
+                            <TableCell>{invoice.invoiceNumber}</TableCell>
+                            <TableCell className="text-right">
+                              {invoice.total.toLocaleString()} IRR
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {invoice.totalCC.toFixed(3)}
+                            </TableCell>
+                            <TableCell>
+                              {formatDate(invoice.createdAt)}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteInvoice(invoice.id)}
+                                className="text-red-600"
+                              >
+                                <Trash className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </ScrollArea>
                 )}
               </div>
             </div>
