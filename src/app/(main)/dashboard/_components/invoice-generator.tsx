@@ -562,7 +562,7 @@ export function InvoiceGenerator() {
     doc.setFontSize(7);
     doc.setTextColor(...textColor);
 
-    items.forEach((item, _index) => {
+    items.forEach((item) => {
       // Check if we need a new page
       if (currentY > 240) {
         doc.addPage();
