@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import { Product } from "@prisma/client";
 import { MoreHorizontal, Pencil, Plus, Trash } from "lucide-react";
@@ -42,6 +42,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { ProductFilters } from "@/app/(main)/dashboard/_components/product-filters";
+
 interface AdminProductSectionProps {
   products: Product[];
 }
@@ -56,6 +58,8 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
     price: "0",
     shipment: "0",
   });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("name-asc");
 
   const { execute: executeDeleteProduct } = useAction(deleteProduct, {
     onSuccess: async (_date, message) => {
@@ -138,6 +142,36 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
 
     await executeDeleteProduct({ id: productId });
   };
+
+  const filteredProducts = useMemo(() => {
+    const filtered = products.filter((product) => {
+      // Search filter
+      return (
+        product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(product.code).toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+
+    // Sort products
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "name-asc":
+          return a.product_name.localeCompare(b.product_name);
+        case "name-desc":
+          return b.product_name.localeCompare(a.product_name);
+        case "price-asc":
+          return a.price - b.price;
+        case "price-desc":
+          return b.price - a.price;
+        case "code-asc":
+          return String(a.code).localeCompare(String(b.code));
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [products, searchTerm, sortBy]);
 
   if (!products)
     return (
@@ -253,6 +287,13 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
         </Dialog>
       </div>
 
+      <ProductFilters
+        searchTerm={searchTerm}
+        SearchTermAction={setSearchTerm}
+        sortBy={sortBy}
+        SortByAction={setSortBy}
+      />
+
       <Card>
         <CardContent>
           <Table>
@@ -267,14 +308,14 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.length === 0 ? (
+              {filteredProducts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center">
                     No products found
                   </TableCell>
                 </TableRow>
               ) : (
-                products.map((product) => (
+                filteredProducts.map((product) => (
                   <TableRow key={product.id}>
                     <TableCell>{product.code}</TableCell>
                     <TableCell>{product.product_name}</TableCell>
