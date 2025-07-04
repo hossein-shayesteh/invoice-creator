@@ -259,7 +259,7 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
       </div>
 
       <Card>
-        <CardContent className="p-0">
+        <CardContent>
           <Table>
             <TableHeader>
               <TableRow>

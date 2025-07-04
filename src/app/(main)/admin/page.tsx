@@ -20,12 +20,12 @@ const AdminPage = async () => {
         <TabsList>
           <TabsTrigger
             value="products"
-            className="flex w-32 items-center gap-2"
+            className="flex w-40 items-center gap-2"
           >
             <Package className="h-4 w-4" />
             Products
           </TabsTrigger>
-          <TabsTrigger value="users" className="flex w-32 items-center gap-2">
+          <TabsTrigger value="users" className="flex w-40 items-center gap-2">
             <User className="h-4 w-4" />
             Users
           </TabsTrigger>

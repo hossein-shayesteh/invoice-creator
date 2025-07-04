@@ -6,6 +6,11 @@ import { Invoice, User } from "@prisma/client";
 import { FileText, MoreHorizontal, Plus, Trash } from "lucide-react";
 import { toast } from "sonner";
 
+import { useAction } from "@/hooks/use-action";
+
+import { createUser } from "@/lib/actions/create-user";
+import { deleteUser } from "@/lib/actions/delete-user";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -54,6 +59,28 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     isAdmin: false,
   });
 
+  const { execute: executeCreateUser } = useAction(createUser, {
+    onSuccess: async (_data, message) => {
+      resetUserForm();
+      setUserDialogOpen(false);
+      toast.success(message);
+    },
+    onError: async (error) => {
+      toast.error(error);
+    },
+  });
+
+  const { execute: executeDeleteUser } = useAction(deleteUser, {
+    onSuccess: async (_data, message) => {
+      resetUserForm();
+      setUserDialogOpen(false);
+      toast.success(message);
+    },
+    onError: async (error) => {
+      toast.error(error);
+    },
+  });
+
   // Handle user form input change
   const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -94,32 +121,12 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
   };
 
   // Handle user form submission
-  const handleUserSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userFormData),
-      });
-
-      if (response.ok) {
-        toast.success("User created successfully");
-        setUserDialogOpen(false);
-        resetUserForm();
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || "Failed to create user");
-      }
-    } catch (error) {
-      console.error("Error creating user:", error);
-      toast.error("Failed to create user");
-    }
+  const handleCreateUser = async () => {
+    await executeCreateUser({ ...userFormData });
   };
 
   // Delete user
-  const deleteUser = async (userId: string) => {
+  const handleDeleteUser = async (userId: string) => {
     if (
       !confirm(
         "Are you sure you want to delete this user? All their invoices will also be deleted.",
@@ -127,26 +134,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     )
       return;
 
-    try {
-      const response = await fetch(`/api/users/${userId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        toast.success("User deleted successfully");
-
-        if (selectedUser?.id === userId) {
-          setUserDetailsOpen(false);
-          setSelectedUser(null);
-        }
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || "Failed to delete");
-      }
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      toast.error("Failed to delete user");
-    }
+    await executeDeleteUser({ id: userId });
   };
 
   // Delete invoice
@@ -211,7 +199,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
               </DialogDescription>
             </DialogHeader>
 
-            <form onSubmit={handleUserSubmit} className="space-y-4">
+            <form action={handleCreateUser} className="space-y-4">
               <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Full Name *</Label>
@@ -276,7 +264,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
       </div>
 
       <Card>
-        <CardContent className="p-0">
+        <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
@@ -329,7 +317,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => deleteUser(user.id)}
+                            onClick={() => handleDeleteUser(user.id)}
                             className="text-red-600"
                           >
                             <Trash className="mr-2 h-4 w-4" />
