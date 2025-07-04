@@ -426,12 +426,12 @@ export function InvoiceGenerator() {
       creator: session?.user?.name || session?.user?.username || "User",
     });
 
-    // Colors matching your print CSS
-    const borderColor = [229, 231, 235]; // #e5e7eb
-    const headingColor = [17, 24, 39]; // #111827
-    const textColor = [55, 65, 81]; // #374151
-    const lightBg = [249, 250, 251]; // #f9fafb
-    const grayText = [107, 114, 128]; // #6b7280
+    // Colors matching your print CSS - explicitly typed as tuples
+    const borderColor: [number, number, number] = [229, 231, 235]; // #e5e7eb
+    const headingColor: [number, number, number] = [17, 24, 39]; // #111827
+    const textColor: [number, number, number] = [55, 65, 81]; // #374151
+    const lightBg: [number, number, number] = [249, 250, 251]; // #f9fafb
+    const grayText: [number, number, number] = [107, 114, 128]; // #6b7280
 
     // Invoice container border (matching your print CSS)
     doc.setDrawColor(...borderColor);
