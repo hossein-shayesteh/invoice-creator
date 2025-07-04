@@ -2,14 +2,16 @@
 
 import React, { useState } from "react";
 
-import { Invoice, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { FileText, MoreHorizontal, Plus, Trash } from "lucide-react";
 import { toast } from "sonner";
 
 import { useAction } from "@/hooks/use-action";
 
 import { createUser } from "@/lib/actions/create-user";
+import { deleteInvoice } from "@/lib/actions/delete-invoice";
 import { deleteUser } from "@/lib/actions/delete-user";
+import { getUserById } from "@/lib/user-services";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,14 +45,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { GetUserByIdInvoiceResult, GetUserByIdResult } from "@/types";
+
 interface AdminUsersSectionProps {
   users: User[];
 }
 
 const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<GetUserByIdResult | null>(
+    null,
+  );
   const [userDetailsOpen, setUserDetailsOpen] = useState(false);
-  const [userInvoices, setUserInvoices] = useState<Invoice[]>([]);
+  const [userInvoices, setUserInvoices] = useState<GetUserByIdInvoiceResult[]>(
+    [],
+  );
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [userFormData, setUserFormData] = useState({
     name: "",
@@ -71,6 +79,17 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
   });
 
   const { execute: executeDeleteUser } = useAction(deleteUser, {
+    onSuccess: async (_data, message) => {
+      resetUserForm();
+      setUserDialogOpen(false);
+      toast.success(message);
+    },
+    onError: async (error) => {
+      toast.error(error);
+    },
+  });
+
+  const { execute: executeDeleteInvoice } = useAction(deleteInvoice, {
     onSuccess: async (_data, message) => {
       resetUserForm();
       setUserDialogOpen(false);
@@ -104,20 +123,10 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
 
   // Fetch user details
   const fetchUserDetails = async (userId: string) => {
-    try {
-      const response = await fetch(`/api/users/${userId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setSelectedUser(data);
-        setUserInvoices(data.invoices || []);
-        setUserDetailsOpen(true);
-      } else {
-        toast.error("Failed to fetch user details");
-      }
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-      toast.error("Failed to fetch user details");
-    }
+    const user = await getUserById(userId);
+    setSelectedUser(user);
+    setUserInvoices(user?.invoices || []);
+    setUserDetailsOpen(true);
   };
 
   // Handle user form submission
@@ -138,28 +147,10 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
   };
 
   // Delete invoice
-  const deleteInvoice = async (invoiceId: string) => {
+  const handleDeleteInvoice = async (invoiceId: string) => {
     if (!confirm("Are you sure you want to delete this invoice?")) return;
 
-    try {
-      const response = await fetch(`/api/invoices/${invoiceId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        toast.success("Invoice deleted successfully");
-        // Refresh user details to update invoice list
-        if (selectedUser) {
-          fetchUserDetails(selectedUser.id);
-        }
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || "Failed to delete invoice");
-      }
-    } catch (error) {
-      console.error("Error deleting invoice:", error);
-      toast.error("Failed to delete invoice");
-    }
+    await executeDeleteInvoice({ id: invoiceId });
   };
 
   // Format date
@@ -401,7 +392,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => deleteInvoice(invoice.id)}
+                              onClick={() => handleDeleteInvoice(invoice.id)}
                               className="text-red-600"
                             >
                               <Trash className="h-4 w-4" />
