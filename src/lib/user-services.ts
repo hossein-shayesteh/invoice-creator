@@ -20,6 +20,7 @@ export const getUserById = async (
       name: true,
       username: true,
       role: true,
+      idNumber: true,
       createdAt: true,
       updatedAt: true,
       invoices: {

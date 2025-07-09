@@ -59,9 +59,7 @@ export function ShoppingCart() {
                   Base Price: {item.price.toFixed(2)} AED | CC Points:{" "}
                   {item.cc.toFixed(3)}
                 </p>
-                <p className="text-sm text-gray-600">
-                  Shipment: {item.shipment.toLocaleString()} T
-                </p>
+
                 {item.offerEnabled && item.offerQuantity && (
                   <p className="text-sm text-green-600">
                     +{item.offerQuantity} free items (shipping only)
@@ -142,7 +140,7 @@ export function ShoppingCart() {
             <span>{getCartSubtotal().toLocaleString()} T</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span>Shipping:</span>
+            <span>Offer Shipping:</span>
             <span>{getCartShipping().toLocaleString()} T</span>
           </div>
           <div className="flex justify-between text-sm text-blue-600">

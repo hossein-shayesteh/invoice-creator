@@ -248,53 +248,59 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const getItemTotal = (item: CartItem): number => {
-    const { price, quantity, offerEnabled, offerQuantity, shipment } = item;
+    const { price, quantity, offerEnabled, offerQuantity } = item;
     const { exchangeRate, discountPercentage } = state.pricingSettings;
 
-    const productCost = Math.floor(price * quantity * exchangeRate);
-    let shippingCost = Math.floor(shipment * quantity);
+    // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + 2100)
+    const regularProductCost = Math.floor(
+      quantity *
+        price *
+        (exchangeRate * 1.05 * (1 - discountPercentage / 100) + 2100),
+    );
 
+    // For offer products, we only add shipping cost: offerQuantity * price * 2100
+    let offerShippingCost = 0;
     if (offerEnabled && offerQuantity) {
-      // Additional shipping for free products
-      shippingCost += Math.floor(shipment * offerQuantity);
+      offerShippingCost = Math.floor(offerQuantity * price * 2100);
     }
 
-    const subtotal = productCost + shippingCost;
-    const discountAmount = Math.floor((subtotal * discountPercentage) / 100);
-
-    return subtotal - discountAmount;
+    return regularProductCost + offerShippingCost;
   };
 
   const getCartSubtotal = (): number => {
     return state.items.reduce((total, item) => {
       const { price, quantity } = item;
-      const { exchangeRate } = state.pricingSettings;
+      const { exchangeRate, discountPercentage } = state.pricingSettings;
 
-      return total + Math.floor(price * quantity * exchangeRate);
+      // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + 2100)
+      const regularProductCost = Math.floor(
+        quantity *
+          price *
+          (exchangeRate * 1.05 * (1 - discountPercentage / 100) + 2100),
+      );
+
+      return total + regularProductCost;
     }, 0);
   };
 
   const getCartShipping = (): number => {
     return state.items.reduce((total, item) => {
-      const { shipment, quantity, offerEnabled, offerQuantity } = item;
-      let itemShipping = Math.floor(shipment * quantity);
+      const { price, offerEnabled, offerQuantity } = item;
 
+      // For offer products, we only add shipping cost: offerQuantity * price * 2100
+      let offerShippingCost = 0;
       if (offerEnabled && offerQuantity) {
-        itemShipping += Math.floor(shipment * offerQuantity);
+        offerShippingCost = Math.floor(offerQuantity * price * 2100);
       }
 
-      return total + itemShipping;
+      return total + offerShippingCost;
     }, 0);
   };
 
   const getCartTotal = (): number => {
-    const subtotal = getCartSubtotal();
-    const shipping = getCartShipping();
-    const total = subtotal + shipping;
-    const discountAmount = Math.floor(
-      (total * state.pricingSettings.discountPercentage) / 100,
-    );
-    return total - discountAmount;
+    // Total is now simply the sum of subtotal (which includes regular product costs) and shipping (which includes offer shipping costs)
+    // The discount is already applied in the subtotal calculation
+    return getCartSubtotal() + getCartShipping();
   };
 
   const getTotalCC = (): number => {

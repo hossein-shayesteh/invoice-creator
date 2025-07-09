@@ -67,24 +67,10 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const calculateDisplayPrice = () => {
     const { exchangeRate, discountPercentage } = state.pricingSettings;
-    const basePrice = Math.floor(product.price * exchangeRate);
-    const shippingCost = Math.floor(product.shipment);
-    const total = basePrice + shippingCost;
-    const discountAmount = Math.floor((total * discountPercentage) / 100);
-    return total - discountAmount;
-  };
-
-  const calculateOfferPrice = () => {
-    if (!offerEnabled) return calculateDisplayPrice();
-
-    const { exchangeRate, discountPercentage } = state.pricingSettings;
-    const basePrice = Math.floor(product.price * exchangeRate); // Price for paid items only
-    const totalShippingCost = Math.floor(
-      product.shipment * (quantity + offerQuantity),
-    ); // Shipping for all items
-    const total = basePrice + totalShippingCost;
-    const discountAmount = Math.floor((total * discountPercentage) / 100);
-    return total - discountAmount;
+    return Math.floor(
+      product.price *
+        (exchangeRate * 1.05 * (1 - discountPercentage / 100) + 2100),
+    );
   };
 
   return (
@@ -110,30 +96,14 @@ export function ProductCard({ product }: ProductCardProps) {
             <span>CC Points:</span>
             <span className="font-medium">{product.cc.toFixed(3)}</span>
           </div>
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>Shipment (T):</span>
-            <span className="font-medium">
-              {product.shipment.toLocaleString()}
-            </span>
-          </div>
+
           <div className="border-t pt-2">
             <div className="flex items-center justify-between">
               <span className="font-medium">Total (T):</span>
               <div className="text-right">
-                {offerEnabled ? (
-                  <div>
-                    <div className="text-sm text-gray-500 line-through">
-                      {calculateDisplayPrice().toLocaleString()}
-                    </div>
-                    <div className="font-bold text-green-600">
-                      {calculateOfferPrice().toLocaleString()}
-                    </div>
-                  </div>
-                ) : (
-                  <span className="text-lg font-bold">
-                    {calculateDisplayPrice().toLocaleString()}
-                  </span>
-                )}
+                <div className="text-lg font-bold">
+                  {calculateDisplayPrice().toLocaleString()}
+                </div>
               </div>
             </div>
           </div>

@@ -16,7 +16,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   if (!session?.user && session?.user.role !== Role.ADMIN)
     return { error: "Unauthorized." };
 
-  const { username, password, name, isAdmin } = data;
+  const { username, password, name, isAdmin, idNumber } = data;
 
   let user;
 
@@ -38,6 +38,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       data: {
         name,
         username,
+        idNumber,
         password: hashedPassword,
         role: isAdmin ? Role.ADMIN : Role.USER,
       },
@@ -45,6 +46,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         id: true,
         name: true,
         username: true,
+        idNumber: true,
         role: true,
         createdAt: true,
         updatedAt: true,

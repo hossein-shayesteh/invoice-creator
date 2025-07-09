@@ -65,6 +65,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     name: "",
     username: "",
     password: "",
+    idNumber: "",
     isAdmin: false,
   });
 
@@ -119,6 +120,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
       name: "",
       username: "",
       password: "",
+      idNumber: "",
       isAdmin: false,
     });
   };
@@ -211,6 +213,17 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                     id="username"
                     name="username"
                     value={userFormData.username}
+                    onChange={handleUserInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="idNumber">Id Number *</Label>
+                  <Input
+                    id="idNumber"
+                    name="idNumber"
+                    value={userFormData.idNumber}
                     onChange={handleUserInputChange}
                     required
                   />

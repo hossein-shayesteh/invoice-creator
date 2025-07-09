@@ -10,13 +10,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/sign-in",
     error: "/sign-in",
   },
-  debug: true, // Enable debug for more detailed logs
+  debug: true,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.username = user.username;
+        token.idNumber = user.idNumber;
       }
       return token;
     },
@@ -25,6 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string;
         session.user.role = token.role;
         session.user.username = token.username as string;
+        session.user.idNumber = token.idNumber as string;
       }
       return session;
     },
@@ -75,6 +77,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const returnUser = {
             id: user.id,
             name: user.name,
+            idNumber: user.idNumber,
             username: user.username,
             role: user.role,
           };

@@ -18,7 +18,6 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   const {
     discountPercentage,
     items,
-    shipping,
     subtotal,
     total,
     totalCC,
@@ -34,7 +33,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         invoiceNumber,
         userId: session.user.id,
         subtotal,
-        shipping,
+        shipping: 0, // Set shipping to 0 as it's now included in the total
         total,
         totalCC,
         exchangeRate,

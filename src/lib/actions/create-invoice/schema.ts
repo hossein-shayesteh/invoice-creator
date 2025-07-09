@@ -3,7 +3,6 @@ import { z } from "zod";
 export const createInvoiceSchema = z.object({
   invoiceNumber: z.string(),
   subtotal: z.number(),
-  shipping: z.number(),
   discount: z.number(),
   total: z.number(),
   totalCC: z.number(),
@@ -18,7 +17,6 @@ export const createInvoiceSchema = z.object({
       freeQuantity: z.number(),
       unitPrice: z.number(),
       ccPoints: z.number(),
-      shipment: z.number(),
       subtotal: z.number(),
     }),
   ),

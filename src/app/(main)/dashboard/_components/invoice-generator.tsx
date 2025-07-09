@@ -66,10 +66,12 @@ export function InvoiceGenerator() {
     );
   }
 
+  console.log(session);
+
   const generateInvoiceNumber = () => {
     const date = new Date();
-    const formatted = format(date, "yyyyMMdd-HH:mm");
-    return `INV-${formatted}`;
+    const formatted = format(date, "yyyy/MM/dd-HH:mm");
+    return `INV-${session?.user.idNumber}-${formatted}`;
   };
 
   const handlePrint = () => {
@@ -300,7 +302,6 @@ export function InvoiceGenerator() {
                         <th class="text-center">Qty</th>
                         <th class="text-right">Unit Price (AED)</th>
                         <th class="text-right">CC Points</th>
-                        <th class="text-right">Shipment (T)</th>
                         <th class="text-center">Offer</th>
                         <th class="text-right">Total (T)</th>
                       </tr>
@@ -308,28 +309,26 @@ export function InvoiceGenerator() {
                     <tbody>
                       ${items
                         .map((item) => {
-                          const productCost = Math.floor(
-                            item.price *
-                              item.quantity *
-                              pricingSettings.exchangeRate,
-                          );
-                          let shippingCost = Math.floor(
-                            item.shipment * item.quantity,
+                          // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + 2100)
+                          const regularProductCost = Math.floor(
+                            item.quantity *
+                              item.price *
+                              (pricingSettings.exchangeRate *
+                                1.05 *
+                                (1 - pricingSettings.discountPercentage / 100) +
+                                2100),
                           );
 
+                          // For offer products, we only add shipping cost: offerQuantity * price * 2100
+                          let offerShippingCost = 0;
                           if (item.offerEnabled && item.offerQuantity) {
-                            shippingCost += Math.floor(
-                              item.shipment * item.offerQuantity,
+                            offerShippingCost = Math.floor(
+                              item.offerQuantity * item.price * 2100,
                             );
                           }
 
-                          const itemTotal = productCost + shippingCost;
-                          const discountAmount = Math.floor(
-                            (itemTotal * pricingSettings.discountPercentage) /
-                              100,
-                          );
-                          const finalTotal = itemTotal - discountAmount;
-
+                          const finalTotal =
+                            regularProductCost + offerShippingCost;
                           const totalCC = item.cc * item.quantity;
 
                           return `
@@ -346,7 +345,6 @@ export function InvoiceGenerator() {
                             </td>
                             <td class="text-right">${item.price.toFixed(2)}</td>
                             <td class="text-right">${totalCC.toFixed(3)}</td>
-                            <td class="text-right">${item.shipment.toLocaleString()}</td>
                             <td class="text-center">
                               ${
                                 item.offerEnabled && item.offerQuantity
@@ -364,27 +362,17 @@ export function InvoiceGenerator() {
                   
                   <div class="totals">
                     <div class="totals-row">
-                      <span>Subtotal:</span>
+                      <span>Regular Products:</span>
                       <span>${getCartSubtotal().toLocaleString()} T</span>
                     </div>
                     <div class="totals-row">
-                      <span>Shipping:</span>
+                      <span>Offer Products Shipping:</span>
                       <span>${getCartShipping().toLocaleString()} T</span>
                     </div>
                     <div class="totals-row" style="color: #2563eb;">
                       <span>Total CC Points:</span>
                       <span>${getTotalCC().toFixed(3)}</span>
                     </div>
-                    ${
-                      pricingSettings.discountPercentage > 0
-                        ? `
-                      <div class="totals-row discount-row">
-                        <span>Discount (${pricingSettings.discountPercentage}%):</span>
-                        <span>-${Math.floor(((getCartSubtotal() + getCartShipping()) * pricingSettings.discountPercentage) / 100).toLocaleString()} T</span>
-                      </div>
-                    `
-                        : ""
-                    }
                     <div class="totals-row total-row">
                       <span>Total Amount:</span>
                       <span>${getCartTotal().toLocaleString()} T</span>
@@ -564,21 +552,23 @@ export function InvoiceGenerator() {
         currentY = 20;
       }
 
-      // Calculate values exactly like in your print version
-      const productCost = Math.floor(
-        item.price * item.quantity * pricingSettings.exchangeRate,
+      // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + 2100)
+      const regularProductCost = Math.floor(
+        item.quantity *
+          item.price *
+          (pricingSettings.exchangeRate *
+            1.05 *
+            (1 - pricingSettings.discountPercentage / 100) +
+            2100),
       );
-      let shippingCost = Math.floor(item.shipment * item.quantity);
 
+      // For offer products, we only add shipping cost: offerQuantity * price * 2100
+      let offerShippingCost = 0;
       if (item.offerEnabled && item.offerQuantity) {
-        shippingCost += Math.floor(item.shipment * item.offerQuantity);
+        offerShippingCost = Math.floor(item.offerQuantity * item.price * 2100);
       }
 
-      const itemTotal = productCost + shippingCost;
-      const discountAmount = Math.floor(
-        (itemTotal * pricingSettings.discountPercentage) / 100,
-      );
-      const finalTotal = itemTotal - discountAmount;
+      const finalTotal = regularProductCost + offerShippingCost;
 
       const totalCC = item.cc * item.quantity;
 
@@ -649,15 +639,15 @@ export function InvoiceGenerator() {
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
 
-    // Subtotal
-    doc.text("Subtotal:", totalsX, currentY);
+    // Regular Products
+    doc.text("Regular Products:", totalsX, currentY);
     doc.text(`${getCartSubtotal().toLocaleString()} T`, valuesX, currentY, {
       align: "right",
     });
 
-    // Shipping
+    // Offer Products Shipping
     currentY += 6;
-    doc.text("Shipping:", totalsX, currentY);
+    doc.text("Offer Products Shipping:", totalsX, currentY);
     doc.text(`${getCartShipping().toLocaleString()} T`, valuesX, currentY, {
       align: "right",
     });
@@ -671,27 +661,7 @@ export function InvoiceGenerator() {
     });
     doc.setTextColor(...textColor);
 
-    // Discount (if applicable, green color)
-    if (pricingSettings.discountPercentage > 0) {
-      currentY += 6;
-      doc.setTextColor(4, 120, 87); // Green color
-      doc.text(
-        `Discount (${pricingSettings.discountPercentage}%):`,
-        totalsX,
-        currentY,
-      );
-      doc.text(
-        `-${Math.floor(
-          ((getCartSubtotal() + getCartShipping()) *
-            pricingSettings.discountPercentage) /
-            100,
-        ).toLocaleString()} T`,
-        valuesX,
-        currentY,
-        { align: "right" },
-      );
-      doc.setTextColor(...textColor);
-    }
+    // Discount is now included in the calculation
 
     // Total line
     currentY += 6;
@@ -740,20 +710,23 @@ export function InvoiceGenerator() {
 
     // Prepare invoice data for API
     const invoiceItemsData = items.map((item) => {
-      const productCost = Math.floor(
-        item.price * item.quantity * pricingSettings.exchangeRate,
+      // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + 2100)
+      const regularProductCost = Math.floor(
+        item.quantity *
+          item.price *
+          (pricingSettings.exchangeRate *
+            1.05 *
+            (1 - pricingSettings.discountPercentage / 100) +
+            2100),
       );
-      let shippingCost = Math.floor(item.shipment * item.quantity);
 
+      // For offer products, we only add shipping cost: offerQuantity * price * 2100
+      let offerShippingCost = 0;
       if (item.offerEnabled && item.offerQuantity) {
-        shippingCost += Math.floor(item.shipment * item.offerQuantity);
+        offerShippingCost = Math.floor(item.offerQuantity * item.price * 2100);
       }
 
-      const itemTotal = productCost + shippingCost;
-      const discountAmount = Math.floor(
-        (itemTotal * pricingSettings.discountPercentage) / 100,
-      );
-      const finalTotal = itemTotal - discountAmount;
+      const finalTotal = regularProductCost + offerShippingCost;
 
       return {
         productId: item.id,
@@ -764,7 +737,6 @@ export function InvoiceGenerator() {
           item.offerEnabled && item.offerQuantity ? item.offerQuantity : 0,
         unitPrice: item.price,
         ccPoints: item.cc * item.quantity,
-        shipment: item.shipment,
         subtotal: finalTotal,
       };
     });
@@ -772,12 +744,7 @@ export function InvoiceGenerator() {
     const apiInvoiceData = {
       invoiceNumber: invoiceData.id,
       subtotal: getCartSubtotal(),
-      shipping: getCartShipping(),
-      discount: Math.floor(
-        ((getCartSubtotal() + getCartShipping()) *
-          pricingSettings.discountPercentage) /
-          100,
-      ),
+      discount: 0, // Discount is now included in the calculation
       total: getCartTotal(),
       totalCC: getTotalCC(),
       exchangeRate: pricingSettings.exchangeRate,
@@ -851,24 +818,22 @@ export function InvoiceGenerator() {
             <div className="overflow-x-auto">
               <table className="w-full border border-gray-200">
                 <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-200 px-3 py-2 text-left">
-                      Code
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-left">
+                  <tr>
+                    <th className="border border-gray-200 px-3 py-2">Code</th>
+                    <th className="border border-gray-200 px-3 py-2">
                       Product
                     </th>
                     <th className="border border-gray-200 px-3 py-2 text-center">
-                      Qty
+                      Quantity
                     </th>
                     <th className="border border-gray-200 px-3 py-2 text-right">
-                      Unit Price (AED)
+                      Unit Price
+                    </th>
+                    <th className="border border-gray-200 px-3 py-2 text-right">
+                      Regular Cost (T)
                     </th>
                     <th className="border border-gray-200 px-3 py-2 text-right">
                       CC Points
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-right">
-                      Shipment (T)
                     </th>
                     <th className="border border-gray-200 px-3 py-2 text-center">
                       Offer
@@ -880,25 +845,25 @@ export function InvoiceGenerator() {
                 </thead>
                 <tbody>
                   {items.map((item) => {
-                    const productCost = Math.floor(
-                      item.price * item.quantity * pricingSettings.exchangeRate,
-                    );
-                    let shippingCost = Math.floor(
-                      item.shipment * item.quantity,
+                    // New formula for regular products
+                    const regularProductCost = Math.floor(
+                      item.quantity *
+                        item.price *
+                        (pricingSettings.exchangeRate *
+                          1.05 *
+                          (1 - pricingSettings.discountPercentage / 100) +
+                          2100),
                     );
 
+                    // For offer products, we only add shipping cost
+                    let offerShippingCost = 0;
                     if (item.offerEnabled && item.offerQuantity) {
-                      shippingCost += Math.floor(
-                        item.shipment * item.offerQuantity,
+                      offerShippingCost = Math.floor(
+                        item.offerQuantity * item.price * 2100,
                       );
                     }
 
-                    const itemTotal = productCost + shippingCost;
-                    const discountAmount = Math.floor(
-                      (itemTotal * pricingSettings.discountPercentage) / 100,
-                    );
-                    const finalTotal = itemTotal - discountAmount;
-
+                    const finalTotal = regularProductCost + offerShippingCost;
                     const totalCC = item.cc * item.quantity;
 
                     return (
@@ -921,10 +886,10 @@ export function InvoiceGenerator() {
                           {item.price.toFixed(2)}
                         </td>
                         <td className="border border-gray-200 px-3 py-2 text-right">
-                          {totalCC.toFixed(3)}
+                          {regularProductCost.toLocaleString()}
                         </td>
                         <td className="border border-gray-200 px-3 py-2 text-right">
-                          {item.shipment.toLocaleString()}
+                          {totalCC.toFixed(3)}
                         </td>
                         <td className="border border-gray-200 px-3 py-2 text-center">
                           {item.offerEnabled && item.offerQuantity ? (
@@ -950,11 +915,11 @@ export function InvoiceGenerator() {
           <div className="space-y-2">
             <Separator />
             <div className="flex justify-between">
-              <span>Subtotal:</span>
+              <span>Regular Products:</span>
               <span>{getCartSubtotal().toLocaleString()} T</span>
             </div>
             <div className="flex justify-between">
-              <span>Shipping:</span>
+              <span>Offer Products Shipping:</span>
               <span>{getCartShipping().toLocaleString()} T</span>
             </div>
             <div className="flex justify-between text-blue-600">

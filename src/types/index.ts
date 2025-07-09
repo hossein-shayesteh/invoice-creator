@@ -18,6 +18,7 @@ declare module "next-auth" {
     user: {
       id: string;
       role: Role;
+      idNumber: string;
       username: string;
     } & DefaultSession["user"];
   }
@@ -25,6 +26,7 @@ declare module "next-auth" {
   interface User {
     id: string;
     role: Role;
+    idNumber: string | null;
     username: string | null;
     name: string | null;
   }
@@ -34,6 +36,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role: Role;
+    idNumber: string | null;
     username: string | null;
   }
 }
@@ -43,6 +46,7 @@ export type GetUserByIdResult = Prisma.UserGetPayload<{
     id: true;
     name: true;
     username: true;
+    idNumber: true;
     role: true;
     createdAt: true;
     updatedAt: true;
