@@ -276,6 +276,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Username</TableHead>
+                <TableHead>ID Number</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead className="text-center">Invoices</TableHead>
                 <TableHead>Created</TableHead>
@@ -294,6 +295,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                   <TableRow key={user.id}>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.idNumber}</TableCell>
                     <TableCell>
                       <Badge
                         variant={user.role === "ADMIN" ? "default" : "outline"}
@@ -303,7 +305,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                     </TableCell>
                     <TableCell className="text-center">
                       {/*TODO*/}
-                      {/*{user._count?.invoices || 0}*/}
+                      {userInvoices.length || 0}
                     </TableCell>
                     <TableCell>{formatDate(user.createdAt)}</TableCell>
                     <TableCell className="text-right">
