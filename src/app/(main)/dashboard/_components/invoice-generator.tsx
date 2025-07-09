@@ -6,10 +6,10 @@ import { useCart } from "@/contexts/cart-context";
 import { format } from "date-fns";
 import { jsPDF } from "jspdf";
 import { Download, FileText, Printer } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 import { useAction } from "@/hooks/use-action";
-import { useAuth } from "@/hooks/use-auth";
 
 import { createInvoice } from "@/lib/actions/create-invoice";
 
@@ -28,7 +28,7 @@ export function InvoiceGenerator() {
     clearCart,
   } = useCart();
 
-  const { session } = useAuth();
+  const { data: session } = useSession();
   const [isSaving, setIsSaving] = useState(false);
   const invoiceContentRef = useRef<HTMLDivElement>(null);
 

@@ -18,7 +18,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.role = user.role;
         token.username = user.username;
         token.idNumber = user.idNumber;
+      } else if (token.id) {
+        // Only fetch if token.id exists
+        try {
+          const dbUser = await db.user.findUnique({
+            where: { id: token.id as string },
+          });
+
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.username = dbUser.username;
+            token.idNumber = dbUser.idNumber;
+          }
+        } catch (err) {
+          console.error("❌ Error loading user from DB in JWT callback:", err);
+        }
       }
+
       return token;
     },
     async session({ session, token }) {
