@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Product Ordering & Invoice System",
+  title: "Success Family",
   description:
     "Modern Next.js application for product ordering and invoice generation",
 };

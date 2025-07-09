@@ -256,7 +256,7 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="shipment">Shipment (IRR)</Label>
+                  <Label htmlFor="shipment">Shipment (T)</Label>
                   <Input
                     id="shipment"
                     name="shipment"
@@ -303,7 +303,7 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                 <TableHead>Name</TableHead>
                 <TableHead className="text-right">CC Points</TableHead>
                 <TableHead className="text-right">Price (AED)</TableHead>
-                <TableHead className="text-right">Shipment (IRR)</TableHead>
+                <TableHead className="text-right">Shipment (T)</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>

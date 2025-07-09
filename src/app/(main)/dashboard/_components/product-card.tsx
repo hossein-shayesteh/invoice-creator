@@ -25,13 +25,14 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [offerEnabled, setOfferEnabled] = useState(false);
   const [offerQuantity, setOfferQuantity] = useState(1);
   const { addToCart, state } = useCart();
 
   const handleAddToCart = () => {
-    setQuantity(1);
+    if (quantity === 0) return;
+    setQuantity(0);
     addToCart(
       product,
       quantity,
@@ -110,14 +111,14 @@ export function ProductCard({ product }: ProductCardProps) {
             <span className="font-medium">{product.cc.toFixed(3)}</span>
           </div>
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>Shipment (IRR):</span>
+            <span>Shipment (T):</span>
             <span className="font-medium">
               {product.shipment.toLocaleString()}
             </span>
           </div>
           <div className="border-t pt-2">
             <div className="flex items-center justify-between">
-              <span className="font-medium">Total (IRR):</span>
+              <span className="font-medium">Total (T):</span>
               <div className="text-right">
                 {offerEnabled ? (
                   <div>
@@ -188,10 +189,10 @@ export function ProductCard({ product }: ProductCardProps) {
           <Input
             id={`quantity-${product.code}`}
             type="number"
-            min="1"
+            min="0"
             value={quantity}
             onChange={(e) =>
-              setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+              setQuantity(Math.max(0, parseInt(e.target.value) || 0))
             }
             className="w-full"
           />

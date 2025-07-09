@@ -387,7 +387,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                           <TableRow key={invoice.id}>
                             <TableCell>{invoice.invoiceNumber}</TableCell>
                             <TableCell className="text-right">
-                              {invoice.total.toLocaleString()} IRR
+                              {invoice.total.toLocaleString()} T
                             </TableCell>
                             <TableCell className="text-right">
                               {invoice.totalCC.toFixed(3)}

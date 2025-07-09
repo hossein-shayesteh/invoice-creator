@@ -276,7 +276,7 @@ export function InvoiceGenerator() {
                       <h3>Invoice Details</h3>
                       <p><strong>Invoice #:</strong> ${generateInvoiceNumber()}</p>
                       <p><strong>Date:</strong> ${format(new Date(), "PPP")}</p>
-                      <p><strong>Exchange Rate:</strong> 1 AED = ${pricingSettings.exchangeRate.toLocaleString()} IRR</p>
+                      <p><strong>Exchange Rate:</strong> 1 AED = ${pricingSettings.exchangeRate.toLocaleString()} T</p>
                     </div>
                     
                     <div class="invoice-details-group">
@@ -300,9 +300,9 @@ export function InvoiceGenerator() {
                         <th class="text-center">Qty</th>
                         <th class="text-right">Unit Price (AED)</th>
                         <th class="text-right">CC Points</th>
-                        <th class="text-right">Shipment (IRR)</th>
+                        <th class="text-right">Shipment (T)</th>
                         <th class="text-center">Offer</th>
-                        <th class="text-right">Total (IRR)</th>
+                        <th class="text-right">Total (T)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -330,12 +330,7 @@ export function InvoiceGenerator() {
                           );
                           const finalTotal = itemTotal - discountAmount;
 
-                          const totalQuantity =
-                            item.quantity +
-                            (item.offerEnabled && item.offerQuantity
-                              ? item.offerQuantity
-                              : 0);
-                          const totalCC = item.cc * totalQuantity;
+                          const totalCC = item.cc * item.quantity;
 
                           return `
                           <tr>
@@ -370,11 +365,11 @@ export function InvoiceGenerator() {
                   <div class="totals">
                     <div class="totals-row">
                       <span>Subtotal:</span>
-                      <span>${getCartSubtotal().toLocaleString()} IRR</span>
+                      <span>${getCartSubtotal().toLocaleString()} T</span>
                     </div>
                     <div class="totals-row">
                       <span>Shipping:</span>
-                      <span>${getCartShipping().toLocaleString()} IRR</span>
+                      <span>${getCartShipping().toLocaleString()} T</span>
                     </div>
                     <div class="totals-row" style="color: #2563eb;">
                       <span>Total CC Points:</span>
@@ -385,14 +380,14 @@ export function InvoiceGenerator() {
                         ? `
                       <div class="totals-row discount-row">
                         <span>Discount (${pricingSettings.discountPercentage}%):</span>
-                        <span>-${Math.floor(((getCartSubtotal() + getCartShipping()) * pricingSettings.discountPercentage) / 100).toLocaleString()} IRR</span>
+                        <span>-${Math.floor(((getCartSubtotal() + getCartShipping()) * pricingSettings.discountPercentage) / 100).toLocaleString()} T</span>
                       </div>
                     `
                         : ""
                     }
                     <div class="totals-row total-row">
                       <span>Total Amount:</span>
-                      <span>${getCartTotal().toLocaleString()} IRR</span>
+                      <span>${getCartTotal().toLocaleString()} T</span>
                     </div>
                   </div>
                 </div>
@@ -475,7 +470,7 @@ export function InvoiceGenerator() {
     doc.text(`Invoice #: ${invoiceNumber}`, 15, currentY + 6);
     doc.text(`Date: ${currentDate}`, 15, currentY + 12);
     doc.text(
-      `Exchange Rate: 1 AED = ${pricingSettings.exchangeRate.toLocaleString()} IRR`,
+      `Exchange Rate: 1 AED = ${pricingSettings.exchangeRate.toLocaleString()} T`,
       15,
       currentY + 18,
     );
@@ -521,9 +516,9 @@ export function InvoiceGenerator() {
       "Qty",
       "Unit Price (AED)",
       "CC Points",
-      "Shipment (IRR)",
+      "Shipment (T)",
       "Offer",
-      "Total (IRR)",
+      "Total (T)",
     ];
     const columnWidths = [20, 35, 15, 22, 18, 25, 15, 25];
     const columnX = [15, 35, 70, 85, 107, 125, 150, 165];
@@ -585,10 +580,7 @@ export function InvoiceGenerator() {
       );
       const finalTotal = itemTotal - discountAmount;
 
-      const totalQuantity =
-        item.quantity +
-        (item.offerEnabled && item.offerQuantity ? item.offerQuantity : 0);
-      const totalCC = item.cc * totalQuantity;
+      const totalCC = item.cc * item.quantity;
 
       // Row border
       doc.setDrawColor(...borderColor);
@@ -659,14 +651,14 @@ export function InvoiceGenerator() {
 
     // Subtotal
     doc.text("Subtotal:", totalsX, currentY);
-    doc.text(`${getCartSubtotal().toLocaleString()} IRR`, valuesX, currentY, {
+    doc.text(`${getCartSubtotal().toLocaleString()} T`, valuesX, currentY, {
       align: "right",
     });
 
     // Shipping
     currentY += 6;
     doc.text("Shipping:", totalsX, currentY);
-    doc.text(`${getCartShipping().toLocaleString()} IRR`, valuesX, currentY, {
+    doc.text(`${getCartShipping().toLocaleString()} T`, valuesX, currentY, {
       align: "right",
     });
 
@@ -693,7 +685,7 @@ export function InvoiceGenerator() {
           ((getCartSubtotal() + getCartShipping()) *
             pricingSettings.discountPercentage) /
             100,
-        ).toLocaleString()} IRR`,
+        ).toLocaleString()} T`,
         valuesX,
         currentY,
         { align: "right" },
@@ -713,7 +705,7 @@ export function InvoiceGenerator() {
     doc.setFontSize(10);
     doc.setTextColor(...headingColor);
     doc.text("Total Amount:", totalsX, currentY);
-    doc.text(`${getCartTotal().toLocaleString()} IRR`, valuesX, currentY, {
+    doc.text(`${getCartTotal().toLocaleString()} T`, valuesX, currentY, {
       align: "right",
     });
 
@@ -763,10 +755,6 @@ export function InvoiceGenerator() {
       );
       const finalTotal = itemTotal - discountAmount;
 
-      const totalQuantity =
-        item.quantity +
-        (item.offerEnabled && item.offerQuantity ? item.offerQuantity : 0);
-
       return {
         productId: item.id,
         productName: item.product_name,
@@ -775,7 +763,7 @@ export function InvoiceGenerator() {
         freeQuantity:
           item.offerEnabled && item.offerQuantity ? item.offerQuantity : 0,
         unitPrice: item.price,
-        ccPoints: item.cc * totalQuantity,
+        ccPoints: item.cc * item.quantity,
         shipment: item.shipment,
         subtotal: finalTotal,
       };
@@ -836,7 +824,7 @@ export function InvoiceGenerator() {
               </p>
               <p className="text-sm">
                 <strong>Exchange Rate:</strong> 1 AED ={" "}
-                {pricingSettings.exchangeRate.toLocaleString()} IRR
+                {pricingSettings.exchangeRate.toLocaleString()} T
               </p>
             </div>
             <div>
@@ -880,13 +868,13 @@ export function InvoiceGenerator() {
                       CC Points
                     </th>
                     <th className="border border-gray-200 px-3 py-2 text-right">
-                      Shipment (IRR)
+                      Shipment (T)
                     </th>
                     <th className="border border-gray-200 px-3 py-2 text-center">
                       Offer
                     </th>
                     <th className="border border-gray-200 px-3 py-2 text-right">
-                      Total (IRR)
+                      Total (T)
                     </th>
                   </tr>
                 </thead>
@@ -911,12 +899,7 @@ export function InvoiceGenerator() {
                     );
                     const finalTotal = itemTotal - discountAmount;
 
-                    const totalQuantity =
-                      item.quantity +
-                      (item.offerEnabled && item.offerQuantity
-                        ? item.offerQuantity
-                        : 0);
-                    const totalCC = item.cc * totalQuantity;
+                    const totalCC = item.cc * item.quantity;
 
                     return (
                       <tr key={item.code}>
@@ -968,11 +951,11 @@ export function InvoiceGenerator() {
             <Separator />
             <div className="flex justify-between">
               <span>Subtotal:</span>
-              <span>{getCartSubtotal().toLocaleString()} IRR</span>
+              <span>{getCartSubtotal().toLocaleString()} T</span>
             </div>
             <div className="flex justify-between">
               <span>Shipping:</span>
-              <span>{getCartShipping().toLocaleString()} IRR</span>
+              <span>{getCartShipping().toLocaleString()} T</span>
             </div>
             <div className="flex justify-between text-blue-600">
               <span>Total CC Points:</span>
@@ -988,14 +971,14 @@ export function InvoiceGenerator() {
                       pricingSettings.discountPercentage) /
                       100,
                   ).toLocaleString()}{" "}
-                  IRR
+                  T
                 </span>
               </div>
             )}
             <Separator />
             <div className="flex justify-between text-lg font-bold">
               <span>Total Amount:</span>
-              <span>{getCartTotal().toLocaleString()} IRR</span>
+              <span>{getCartTotal().toLocaleString()} T</span>
             </div>
           </div>
         </div>

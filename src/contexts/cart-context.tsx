@@ -220,6 +220,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const updateExchangeRate = (rate: number) => {
     dispatch({ type: "UPDATE_EXCHANGE_RATE", payload: rate });
+
     // Save to localStorage
     if (typeof window !== "undefined") {
       try {
@@ -298,14 +299,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const getTotalCC = (): number => {
     return state.items.reduce((total, item) => {
-      const { cc, quantity, offerEnabled, offerQuantity } = item;
-      let totalQuantity = quantity;
+      const { cc, quantity } = item;
 
-      if (offerEnabled && offerQuantity) {
-        totalQuantity += offerQuantity;
-      }
-
-      return total + cc * totalQuantity;
+      return total + cc * quantity;
     }, 0);
   };
 

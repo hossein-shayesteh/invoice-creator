@@ -1,6 +1,4 @@
-import { Role } from "@prisma/client";
-import { Product } from "@prisma/client";
-import { Prisma } from "@prisma/client";
+import { Prisma, Product, Role } from "@prisma/client";
 import { DefaultSession } from "next-auth";
 import "next-auth/jwt";
 
@@ -11,7 +9,7 @@ export interface CartItem extends Product {
 }
 
 export interface PricingSettings {
-  exchangeRate: number; // AED to IRR
+  exchangeRate: number; // AED to T
   discountPercentage: number;
 }
 

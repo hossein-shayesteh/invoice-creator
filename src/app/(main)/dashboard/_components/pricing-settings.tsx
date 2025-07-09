@@ -56,7 +56,7 @@ export function PricingSettings() {
         <div className="space-y-2">
           <Label htmlFor="exchange-rate" className="flex items-center gap-2">
             <DollarSign className="h-4 w-4" />
-            Exchange Rate (AED to IRR)
+            Exchange Rate (AED to T)
           </Label>
           <Input
             id="exchange-rate"
@@ -65,13 +65,13 @@ export function PricingSettings() {
             step="100"
             value={pricingSettings.exchangeRate}
             onChange={(e) =>
-              updateExchangeRate(parseFloat(e.target.value) || 15000)
+              updateExchangeRate(parseFloat(e.target.value) || 0)
             }
             placeholder="15000"
           />
           <p className="text-xs text-gray-600">
             Current rate: 1 AED ={" "}
-            {pricingSettings.exchangeRate.toLocaleString()} IRR
+            {pricingSettings.exchangeRate.toLocaleString()} T
           </p>
         </div>
 
@@ -100,7 +100,7 @@ export function PricingSettings() {
             Pricing Information
           </h4>
           <div className="space-y-1 text-sm text-blue-800">
-            <p>• Base prices are in AED and converted to IRR</p>
+            <p>• Base prices are in AED and converted to T</p>
             <p>• CC (shipping cost) is calculated per item</p>
             <p>
               • Offers reduce product cost but shipping applies to all items

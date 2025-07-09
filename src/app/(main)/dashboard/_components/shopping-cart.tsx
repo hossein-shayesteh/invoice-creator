@@ -60,7 +60,7 @@ export function ShoppingCart() {
                   {item.cc.toFixed(3)}
                 </p>
                 <p className="text-sm text-gray-600">
-                  Shipment: {item.shipment.toLocaleString()} IRR
+                  Shipment: {item.shipment.toLocaleString()} T
                 </p>
                 {item.offerEnabled && item.offerQuantity && (
                   <p className="text-sm text-green-600">
@@ -127,7 +127,7 @@ export function ShoppingCart() {
                         : 0)) *
                       (1 - state.pricingSettings.discountPercentage / 100),
                   ).toLocaleString()}{" "}
-                  IRR
+                  T
                 </div>
               </div>
             </div>
@@ -139,11 +139,11 @@ export function ShoppingCart() {
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>Subtotal:</span>
-            <span>{getCartSubtotal().toLocaleString()} IRR</span>
+            <span>{getCartSubtotal().toLocaleString()} T</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Shipping:</span>
-            <span>{getCartShipping().toLocaleString()} IRR</span>
+            <span>{getCartShipping().toLocaleString()} T</span>
           </div>
           <div className="flex justify-between text-sm text-blue-600">
             <span>Total CC Points:</span>
@@ -161,14 +161,14 @@ export function ShoppingCart() {
                     state.pricingSettings.discountPercentage) /
                     100,
                 ).toLocaleString()}{" "}
-                IRR
+                T
               </span>
             </div>
           )}
           <Separator />
           <div className="flex justify-between text-lg font-bold">
             <span>Total:</span>
-            <span>{getCartTotal().toLocaleString()} IRR</span>
+            <span>{getCartTotal().toLocaleString()} T</span>
           </div>
         </div>
       </CardContent>
