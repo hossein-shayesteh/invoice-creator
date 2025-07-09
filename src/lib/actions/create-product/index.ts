@@ -15,7 +15,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   if (!session?.user && session?.user.role !== Role.ADMIN)
     return { error: "Unauthorized." };
 
-  const { code, product_name, cc, price, shipment } = data;
+  const { code, product_name, cc, price } = data;
 
   let product;
 
@@ -36,7 +36,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         product_name,
         cc: parseFloat(cc) || 0,
         price: parseFloat(price) || 0,
-        shipment: parseFloat(shipment) || 0,
+        shipment: 0,
       },
     });
   } catch (e) {

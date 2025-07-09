@@ -56,7 +56,6 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
     product_name: "",
     cc: "0",
     price: "0",
-    shipment: "0",
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("name-asc");
@@ -99,7 +98,6 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
       product_name: "",
       cc: "0",
       price: "0",
-      shipment: "0",
     });
     setEditingProduct(null);
   };
@@ -118,7 +116,6 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
       product_name: product.product_name,
       cc: product.cc.toString(),
       price: product.price.toString(),
-      shipment: product.shipment.toString(),
     });
     setProductDialogOpen(true);
   };
@@ -254,17 +251,6 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                     onChange={handleProductInputChange}
                   />
                 </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="shipment">Shipment (T)</Label>
-                  <Input
-                    id="shipment"
-                    name="shipment"
-                    type="number"
-                    value={productFormData.shipment}
-                    onChange={handleProductInputChange}
-                  />
-                </div>
               </div>
 
               <DialogFooter>
@@ -303,7 +289,6 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                 <TableHead>Name</TableHead>
                 <TableHead className="text-right">CC Points</TableHead>
                 <TableHead className="text-right">Price (AED)</TableHead>
-                <TableHead className="text-right">Shipment (T)</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -324,9 +309,6 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                     </TableCell>
                     <TableCell className="text-right">
                       {product.price.toFixed(2)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {product.shipment.toLocaleString()}
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>

@@ -5,5 +5,4 @@ export const createProductSchema = z.object({
   product_name: z.string(),
   cc: z.string(),
   price: z.string(),
-  shipment: z.string(),
 });
