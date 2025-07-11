@@ -71,7 +71,7 @@ export function InvoiceGenerator() {
   const generateInvoiceNumber = () => {
     const date = new Date();
     const formatted = format(date, "yyyy/MM/dd-HH:mm");
-    return `INV-${session?.user.idNumber}-${formatted}`;
+    return `INV - ${session?.user.idNumber} - ${formatted}`;
   };
 
   const handlePrint = () => {

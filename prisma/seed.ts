@@ -15,6 +15,7 @@ async function main() {
     where: { username: "pooyan" },
     update: {},
     create: {
+      idNumber :"971001621728",
       name: "Pooyan Shafiee",
       username: "pooyan",
       password: hashedPassword,
