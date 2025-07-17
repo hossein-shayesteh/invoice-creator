@@ -155,6 +155,7 @@ interface CartContextType {
   clearCart: () => void;
   getItemTotal: (item: CartItem) => number;
   getCartSubtotal: () => number;
+  getItemTotalAed: () => number;
   getCartShipping: () => number;
   getCartTotal: () => number;
   getTotalCC: () => number;
@@ -267,6 +268,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return regularProductCost + offerShippingCost;
   };
 
+  const getItemTotalAed = (): number => {
+    return state.items.reduce((total, item) => {
+      const { price, quantity } = item;
+
+      return total + quantity * price;
+    }, 0);
+  };
+
   const getCartSubtotal = (): number => {
     return state.items.reduce((total, item) => {
       const { price, quantity } = item;
@@ -324,6 +333,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         getItemTotal,
         getCartSubtotal,
+        getItemTotalAed,
         getCartShipping,
         getCartTotal,
         getTotalCC,

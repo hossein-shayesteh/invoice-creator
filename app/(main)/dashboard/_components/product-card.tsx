@@ -27,7 +27,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const [quantity, setQuantity] = useState(0);
   const [offerEnabled, setOfferEnabled] = useState(false);
-  const [offerQuantity, setOfferQuantity] = useState(1);
+  const [offerQuantity, setOfferQuantity] = useState(0);
   const { addToCart, state } = useCart();
 
   const handleAddToCart = () => {
@@ -37,7 +37,7 @@ export function ProductCard({ product }: ProductCardProps) {
       product,
       quantity,
       offerEnabled,
-      offerEnabled ? offerQuantity : undefined,
+      offerEnabled && offerQuantity > 0 ? offerQuantity : undefined,
     );
     toast(
       <div className="flex items-start gap-3">
@@ -134,10 +134,10 @@ export function ProductCard({ product }: ProductCardProps) {
               <Input
                 id={`offer-quantity-${product.code}`}
                 type="number"
-                min="1"
+                min="0"
                 value={offerQuantity}
                 onChange={(e) =>
-                  setOfferQuantity(Math.max(1, parseInt(e.target.value) || 1))
+                  setOfferQuantity(Math.max(0, parseInt(e.target.value) || 0))
                 }
                 className="w-full text-sm"
               />

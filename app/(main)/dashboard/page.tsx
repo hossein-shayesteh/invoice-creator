@@ -23,7 +23,7 @@ const DashboardPage = async () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="mb-2 text-4xl font-bold text-gray-900">
-            Product Ordering & Invoice System
+            Success Family
           </h1>
           <p className="text-gray-600">
             Browse products, manage your cart, and generate professional

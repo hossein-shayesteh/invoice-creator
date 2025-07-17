@@ -24,6 +24,7 @@ export function InvoiceGenerator() {
     getCartSubtotal,
     getCartShipping,
     getCartTotal,
+    getItemTotalAed,
     getTotalCC,
     clearCart,
   } = useCart();
@@ -75,321 +76,78 @@ export function InvoiceGenerator() {
   };
 
   const handlePrint = () => {
-    const printContent = document.getElementById("invoice-content");
-    if (printContent) {
-      const printWindow = window.open("", "_blank");
-      if (printWindow) {
-        printWindow.document.write(`
-          <html>
-            <head>
-              <title>Invoice ${generateInvoiceNumber()}</title>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <style>
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-                
-                :root {
-                  --primary-color: #4f46e5;
-                  --border-color: #e5e7eb;
-                  --heading-color: #111827;
-                  --text-color: #374151;
-                  --light-bg: #f9fafb;
-                }
-                
-                * {
-                  box-sizing: border-box;
-                  margin: 0;
-                  padding: 0;
-                }
-                
-                body {
-                  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                  color: var(--text-color);
-                  line-height: 1.5;
-                  padding: 2rem;
-                  max-width: 1000px;
-                  margin: 0 auto;
-                  background-color: white;
-                }
-                
-                .invoice-container {
-                  border: 1px solid var(--border-color);
-                  border-radius: 0.5rem;
-                  overflow: hidden;
-                  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-                }
-                
-                .invoice-header {
-                  text-align: center;
-                  padding: 2rem;
-                  background-color: var(--light-bg);
-                  border-bottom: 1px solid var(--border-color);
-                }
-                
-                .invoice-header h1 {
-                  font-size: 2rem;
-                  font-weight: 700;
-                  color: var(--heading-color);
-                  margin-bottom: 0.5rem;
-                  letter-spacing: -0.025em;
-                }
-                
-                .invoice-header p {
-                  color: #6b7280;
-                }
-                
-                .invoice-body {
-                  padding: 2rem;
-                }
-                
-                .invoice-details {
-                  display: flex;
-                  justify-content: space-between;
-                  margin-bottom: 2rem;
-                  flex-wrap: wrap;
-                  gap: 1rem;
-                }
-                
-                .invoice-details-group h3 {
-                  font-size: 1rem;
-                  font-weight: 600;
-                  color: var(--heading-color);
-                  margin-bottom: 0.75rem;
-                  text-transform: uppercase;
-                  letter-spacing: 0.05em;
-                }
-                
-                .invoice-details-group p {
-                  margin-bottom: 0.5rem;
-                  font-size: 0.875rem;
-                }
-                
-                .invoice-details-group p strong {
-                  font-weight: 600;
-                  color: var(--heading-color);
-                }
-                
-                table {
-                  width: 100%;
-                  border-collapse: collapse;
-                  margin-bottom: 2rem;
-                  font-size: 0.875rem;
-                }
-                
-                th {
-                  background-color: var(--light-bg);
-                  font-weight: 600;
-                  color: var(--heading-color);
-                  text-align: left;
-                  padding: 0.75rem 1rem;
-                  border-top: 1px solid var(--border-color);
-                  border-bottom: 1px solid var(--border-color);
-                }
-                
-                td {
-                  padding: 0.75rem 1rem;
-                  border-bottom: 1px solid var(--border-color);
-                  vertical-align: top;
-                }
-                
-                .text-center {
-                  text-align: center;
-                }
-                
-                .text-right {
-                  text-align: right;
-                }
-                
-                .offer-badge {
-                  display: inline-block;
-                  background-color: #fee2e2;
-                  color: #b91c1c;
-                  font-size: 0.75rem;
-                  font-weight: 600;
-                  padding: 0.25rem 0.5rem;
-                  border-radius: 0.25rem;
-                }
-                
-                .effective-qty {
-                  font-size: 0.75rem;
-                  color: #047857;
-                  margin-top: 0.25rem;
-                }
-                
-                .totals {
-                  margin-top: 2rem;
-                  border-top: 1px solid var(--border-color);
-                  padding-top: 1rem;
-                }
-                
-                .totals-row {
-                  display: flex;
-                  justify-content: space-between;
-                  padding: 0.5rem 0;
-                }
-                
-                .discount-row {
-                  color: #047857;
-                }
-                
-                .total-row {
-                  font-weight: 700;
-                  color: var(--heading-color);
-                  font-size: 1.125rem;
-                  padding-top: 0.5rem;
-                  margin-top: 0.5rem;
-                  border-top: 2px solid var(--border-color);
-                }
-                
-                .footer {
-                  margin-top: 3rem;
-                  text-align: center;
-                  color: #6b7280;
-                  font-size: 0.875rem;
-                }
-                
-                @media print {
-                  body {
-                    padding: 0;
-                    background: none;
-                  }
-                  
-                  .invoice-container {
-                    box-shadow: none;
-                    border: none;
-                  }
-                  
-                  @page {
-                    margin: 1cm;
-                  }
-                }
-              </style>
-            </head>
-            <body>
-              <div class="invoice-container">
-                <div class="invoice-header">
-                  <h1>INVOICE</h1>
-                  <p>Product Order Invoice</p>
-                </div>
-                
-                <div class="invoice-body">
-                  <div class="invoice-details">
-                    <div class="invoice-details-group">
-                      <h3>Invoice Details</h3>
-                      <p><strong>Invoice #:</strong> ${generateInvoiceNumber()}</p>
-                      <p><strong>Date:</strong> ${format(new Date(), "PPP")}</p>
-                      <p><strong>Exchange Rate:</strong> 1 AED = ${pricingSettings.exchangeRate.toLocaleString()} T</p>
-                    </div>
-                    
-                    <div class="invoice-details-group">
-                      <h3>Order Summary</h3>
-                      <p><strong>Total Items:</strong> ${items.reduce((sum, item) => sum + item.quantity, 0)}</p>
-                      <p><strong>Unique Products:</strong> ${items.length}</p>
-                      ${
-                        pricingSettings.discountPercentage > 0
-                          ? `<p><strong>Discount:</strong> ${pricingSettings.discountPercentage}%</p>`
-                          : ""
-                      }
-                    </div>
-                  </div>
-                  
-                  <h3 style="margin-bottom: 1rem; font-size: 1rem; font-weight: 600; color: var(--heading-color);">Order Items</h3>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Code</th>
-                        <th>Product</th>
-                        <th class="text-center">Qty</th>
-                        <th class="text-right">Unit Price (AED)</th>
-                        <th class="text-right">CC Points</th>
-                        <th class="text-center">Offer</th>
-                        <th class="text-right">Total (T)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${items
-                        .map((item) => {
-                          // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + 2100)
-                          const regularProductCost = Math.floor(
-                            item.quantity *
-                              item.price *
-                              (pricingSettings.exchangeRate *
-                                1.05 *
-                                (1 - pricingSettings.discountPercentage / 100) +
-                                2100),
-                          );
+    const userInfo = {
+      name: session?.user.name,
+      idNumber: session?.user.idNumber,
+    };
 
-                          // For offer products, we only add shipping cost: offerQuantity * price * 2100
-                          let offerShippingCost = 0;
-                          if (item.offerEnabled && item.offerQuantity) {
-                            offerShippingCost = Math.floor(
-                              item.offerQuantity * item.price * 2100,
-                            );
-                          }
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      // 1. Calculate the total in AED before any other logic
+      const totalAED = items.reduce(
+        (sum, item) => sum + item.quantity * item.price,
+        0,
+      );
 
-                          const finalTotal =
-                            regularProductCost + offerShippingCost;
-                          const totalCC = item.cc * item.quantity;
+      // 2. Generate the list of products
+      const productLines = items
+        .map((item) => {
+          const namePart = `${item.quantity} ${item.product_name}`;
+          return `${namePart.padEnd(45)} ${item.code}`;
+        })
+        .join("\n");
 
-                          return `
-                          <tr>
-                            <td>${item.code}</td>
-                            <td>${item.product_name}</td>
-                            <td class="text-center">
-                              ${item.quantity}
-                              ${
-                                item.offerEnabled && item.offerQuantity
-                                  ? `<div class="effective-qty">(+${item.offerQuantity} free)</div>`
-                                  : ""
-                              }
-                            </td>
-                            <td class="text-right">${item.price.toFixed(2)}</td>
-                            <td class="text-right">${totalCC.toFixed(3)}</td>
-                            <td class="text-center">
-                              ${
-                                item.offerEnabled && item.offerQuantity
-                                  ? `<span class="offer-badge">+${item.offerQuantity} Free</span>`
-                                  : "-"
-                              }
-                            </td>
-                            <td class="text-right">${finalTotal.toLocaleString()}</td>
-                          </tr>
-                        `;
-                        })
-                        .join("")}
-                    </tbody>
-                  </table>
-                  
-                  <div class="totals">
-                    <div class="totals-row">
-                      <span>Regular Products:</span>
-                      <span>${getCartSubtotal().toLocaleString()} T</span>
-                    </div>
-                    <div class="totals-row">
-                      <span>Offer Products Shipping:</span>
-                      <span>${getCartShipping().toLocaleString()} T</span>
-                    </div>
-                    <div class="totals-row" style="color: #2563eb;">
-                      <span>Total CC Points:</span>
-                      <span>${getTotalCC().toFixed(3)}</span>
-                    </div>
-                    <div class="totals-row total-row">
-                      <span>Total Amount:</span>
-                      <span>${getCartTotal().toLocaleString()} T</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="footer">
-                <p>Thank you for your business!</p>
-              </div>
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-      }
+      // 2. Generate the list of products
+      const offerProductLines = items
+        .map((item) => {
+          if (!item.offerQuantity) return null;
+          const namePart = `${item.offerQuantity} ${item.product_name}`;
+          return `${namePart.padEnd(45)} ${item.code}`;
+        })
+        .join("\n");
+
+      // 3. Get the current month name
+      const monthName = new Date().toLocaleString("en-US", { month: "long" });
+
+      // 4. Assemble the final text content
+      const textContent = `
+${monthName.toLowerCase()}
+
+${userInfo.name}
+${userInfo.idNumber}
+${pricingSettings.discountPercentage}%
+
+${productLines}
+
+Offer:
+${offerProductLines}
+
+total: ${totalAED.toFixed(2)} (${pricingSettings.exchangeRate} AED)
+
+${getCartTotal().toLocaleString()} T
+`;
+
+      // 5. Write the content to the new window inside a <pre> tag
+      printWindow.document.write(`
+      <html>
+        <head>
+          <title>Order Summary ${generateInvoiceNumber()}</title>
+          <style>
+            body { 
+              font-family: monospace; 
+              font-size: 14px;
+              margin: 1.5rem;
+            }
+          </style>
+        </head>
+        <body>
+          <pre>${textContent}</pre>
+        </body>
+      </html>
+    `);
+
+      printWindow.document.close();
+      printWindow.print();
     }
   };
 
@@ -639,7 +397,13 @@ export function InvoiceGenerator() {
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
 
+    doc.text("Products Cost (AED):", totalsX, currentY);
+    doc.text(`${getItemTotalAed().toLocaleString()}`, valuesX, currentY, {
+      align: "right",
+    });
+
     // Regular Products
+    currentY += 6;
     doc.text("Regular Products:", totalsX, currentY);
     doc.text(`${getCartSubtotal().toLocaleString()} T`, valuesX, currentY, {
       align: "right",
@@ -914,6 +678,10 @@ export function InvoiceGenerator() {
           {/* Totals */}
           <div className="space-y-2">
             <Separator />
+            <div className="flex justify-between">
+              <span>Products Cost (AED):</span>
+              <span>{getItemTotalAed().toLocaleString()}</span>
+            </div>
             <div className="flex justify-between">
               <span>Regular Products:</span>
               <span>{getCartSubtotal().toLocaleString()} T</span>
