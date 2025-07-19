@@ -16,9 +16,26 @@ const vazirmatn = Vazirmatn({
 });
 
 export const metadata: Metadata = {
-  title: "Success Family",
+  title: {
+    default: "Success Family",
+    template: "%s | Success Family",
+  },
   description:
-    "Modern Next.js application for product ordering and invoice generation",
+    "Easily order products, manage invoices, and grow with Success Family. Your modern solution for efficient online ordering.",
+
+  keywords: [
+    "product ordering",
+    "invoice generation",
+    "e-commerce",
+    "business tools",
+    "Success Family",
+  ],
+  creator: "Success Family",
+
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
