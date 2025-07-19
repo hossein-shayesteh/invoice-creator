@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Geist, Geist_Mono } from "next/font/google";
+import { Vazirmatn } from "next/font/google";
 
 import "./globals.css";
 import { CartProvider } from "@/contexts/cart-context";
@@ -9,14 +9,10 @@ import type { Metadata } from "next";
 import AuthProvider from "@/components/providers/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+// 2. Configure the Persian font
+const vazirmatn = Vazirmatn({
+  subsets: ["arabic", "latin"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -31,10 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" dir="rtl">
+      <body className={`${vazirmatn.variable} antialiased`}>
         <AuthProvider>
           <CartProvider>
             {children}

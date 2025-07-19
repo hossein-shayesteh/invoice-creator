@@ -62,15 +62,18 @@ const ProductSection = ({ products }: ProductProps) => {
           <CardContent className="py-12 text-center">
             <Package className="mx-auto mb-4 h-16 w-16 text-gray-400" />
             <h3 className="mb-2 text-lg font-medium text-gray-900">
-              No products found
+              محصولی یافت نشد
             </h3>
             <p className="text-gray-600">
-              Try adjusting your search or filter criteria
+              معیارهای جستجو یا فیلتر خود را تنظیم کنید
             </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div
+          dir="rtl"
+          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

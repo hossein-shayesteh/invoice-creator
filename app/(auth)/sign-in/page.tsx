@@ -11,17 +11,17 @@ const SignInPage = () => {
       <div className="flex w-full max-w-sm flex-col gap-6">
         <Card className={"flex flex-col gap-6"}>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Welcome</CardTitle>
+            <CardTitle className="text-xl">خوش آمدید</CardTitle>
           </CardHeader>
           <CardContent>
             <form action={handleSignIn}>
               <div className="grid gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="username">نام کاربری</Label>
                   <Input id="username" name="username" type="text" required />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">رمز</Label>
                   <Input
                     id="password"
                     name="password"
@@ -30,7 +30,7 @@ const SignInPage = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full dark:text-gray-100">
-                  Login
+                  ورود
                 </Button>
               </div>
             </form>

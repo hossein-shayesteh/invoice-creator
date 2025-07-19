@@ -55,6 +55,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   }
 
   revalidatePath(`/admin`);
+  revalidatePath(`/dashboard`);
 
   return {
     data: product,

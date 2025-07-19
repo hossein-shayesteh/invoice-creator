@@ -92,16 +92,7 @@ export function InvoiceGenerator() {
       // 2. Generate the list of products
       const productLines = items
         .map((item) => {
-          const namePart = `${item.quantity} ${item.product_name}`;
-          return `${namePart.padEnd(45)} ${item.code}`;
-        })
-        .join("\n");
-
-      // 2. Generate the list of products
-      const offerProductLines = items
-        .map((item) => {
-          if (!item.offerQuantity) return null;
-          const namePart = `${item.offerQuantity} ${item.product_name}`;
+          const namePart = `${item.quantity} ${item.product_name} ${item.offerQuantity ? `(Offer = ${item.offerQuantity})` : null}`;
           return `${namePart.padEnd(45)} ${item.code}`;
         })
         .join("\n");
@@ -118,9 +109,6 @@ ${userInfo.idNumber}
 ${pricingSettings.discountPercentage}%
 
 ${productLines}
-
-Offer:
-${offerProductLines}
 
 total: ${totalAED.toFixed(2)} (${pricingSettings.exchangeRate} AED)
 
@@ -145,9 +133,6 @@ ${getCartTotal().toLocaleString()} T
         </body>
       </html>
     `);
-
-      printWindow.document.close();
-      printWindow.print();
     }
   };
 
@@ -419,7 +404,7 @@ ${getCartTotal().toLocaleString()} T
     // Total CC Points (blue color)
     currentY += 6;
     doc.setTextColor(37, 99, 235); // Blue color
-    doc.text("Total CC Points:", totalsX, currentY);
+    doc.text("مجموع امتیازات CC:", totalsX, currentY);
     doc.text(`${getTotalCC().toFixed(3)}`, valuesX, currentY, {
       align: "right",
     });
@@ -438,7 +423,7 @@ ${getCartTotal().toLocaleString()} T
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(...headingColor);
-    doc.text("Total Amount:", totalsX, currentY);
+    doc.text("مبلغ کل:", totalsX, currentY);
     doc.text(`${getCartTotal().toLocaleString()} T`, valuesX, currentY, {
       align: "right",
     });
@@ -448,7 +433,7 @@ ${getCartTotal().toLocaleString()} T
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(...grayText);
-    doc.text("Thank you for your business!", 105, currentY, {
+    doc.text("از کسب و کار شما متشکریم!", 105, currentY, {
       align: "center",
     });
 
@@ -527,18 +512,18 @@ ${getCartTotal().toLocaleString()} T
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FileText className="h-5 w-5" />
-          Invoice Preview
+          پیش‌نمایش فاکتور
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div id="invoice-content" ref={invoiceContentRef} className="space-y-6">
           {/* Invoice Header */}
           <div className="border-b pb-4 text-center">
-            <h1 className="text-2xl font-bold text-gray-900">INVOICE</h1>
-            <p className="mt-2 text-gray-600">Product Order Invoice</p>
+            <h1 className="text-2xl font-bold text-gray-900">فاکتور</h1>
+            <p className="mt-2 text-gray-600">فاکتور سفارش محصول</p>
             {session?.user && (
               <p className="mt-1 text-sm text-gray-500">
-                Created by: {session.user.name || session.user.username}
+                ایجاد شده توسط: {session.user.name || session.user.username}
               </p>
             )}
           </div>
@@ -546,31 +531,30 @@ ${getCartTotal().toLocaleString()} T
           {/* Invoice Details */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h3 className="mb-2 font-semibold">Invoice Details</h3>
+              <h3 className="mb-2 font-semibold">جزئیات فاکتور</h3>
               <p className="text-sm">
-                <strong>Invoice #:</strong> {invoiceNumber}
+                <strong>شماره فاکتور:</strong> {invoiceNumber}
               </p>
               <p className="text-sm">
-                <strong>Date:</strong> {currentDate}
+                <strong>تاریخ:</strong> {currentDate}
               </p>
               <p className="text-sm">
-                <strong>Exchange Rate:</strong> 1 AED ={" "}
-                {pricingSettings.exchangeRate.toLocaleString()} T
+                <strong>نرخ تبدیل ارز:</strong> 1 درهم ={" "}
+                {pricingSettings.exchangeRate.toLocaleString()} تومان
               </p>
             </div>
             <div>
-              <h3 className="mb-2 font-semibold">Order Summary</h3>
+              <h3 className="mb-2 font-semibold">خلاصه سفارش</h3>
               <p className="text-sm">
-                <strong>Total Items:</strong>{" "}
+                <strong>تعداد کل اقلام:</strong>{" "}
                 {items.reduce((sum, item) => sum + item.quantity, 0)}
               </p>
               <p className="text-sm">
-                <strong>Unique Products:</strong> {items.length}
+                <strong>محصولات منحصر به فرد:</strong> {items.length}
               </p>
               {pricingSettings.discountPercentage > 0 && (
                 <p className="text-sm">
-                  <strong>Discount:</strong>{" "}
-                  {pricingSettings.discountPercentage}%
+                  <strong>تخفیف:</strong> {pricingSettings.discountPercentage}%
                 </p>
               )}
             </div>
@@ -578,32 +562,30 @@ ${getCartTotal().toLocaleString()} T
 
           {/* Items Table */}
           <div>
-            <h3 className="mb-3 font-semibold">Order Items</h3>
+            <h3 className="mb-3 font-semibold">اقلام سفارش</h3>
             <div className="overflow-x-auto">
               <table className="w-full border border-gray-200">
                 <thead>
                   <tr>
-                    <th className="border border-gray-200 px-3 py-2">Code</th>
-                    <th className="border border-gray-200 px-3 py-2">
-                      Product
+                    <th className="border border-gray-200 px-3 py-2">کد</th>
+                    <th className="border border-gray-200 px-3 py-2">محصول</th>
+                    <th className="border border-gray-200 px-3 py-2 text-center">
+                      تعداد
+                    </th>
+                    <th className="border border-gray-200 px-3 py-2 text-right">
+                      قیمت واحد
+                    </th>
+                    <th className="border border-gray-200 px-3 py-2 text-right">
+                      هزینه عادی (تومان)
+                    </th>
+                    <th className="border border-gray-200 px-3 py-2 text-right">
+                      امتیازات CC
                     </th>
                     <th className="border border-gray-200 px-3 py-2 text-center">
-                      Quantity
+                      پیشنهاد ویژه
                     </th>
                     <th className="border border-gray-200 px-3 py-2 text-right">
-                      Unit Price
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-right">
-                      Regular Cost (T)
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-right">
-                      CC Points
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-center">
-                      Offer
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-right">
-                      Total (T)
+                      جمع کل (تومان)
                     </th>
                   </tr>
                 </thead>
@@ -619,7 +601,7 @@ ${getCartTotal().toLocaleString()} T
                           2100),
                     );
 
-                    // For offer products, we only add shipping cost
+                    // برای محصولات با پیشنهاد ویژه، فقط هزینه ارسال اضافه می‌شود
                     let offerShippingCost = 0;
                     if (item.offerEnabled && item.offerQuantity) {
                       offerShippingCost = Math.floor(
@@ -642,7 +624,7 @@ ${getCartTotal().toLocaleString()} T
                           {item.quantity}
                           {item.offerEnabled && item.offerQuantity && (
                             <div className="text-xs text-green-600">
-                              (+{item.offerQuantity} free)
+                              (+{item.offerQuantity} رایگان)
                             </div>
                           )}
                         </td>
@@ -658,7 +640,7 @@ ${getCartTotal().toLocaleString()} T
                         <td className="border border-gray-200 px-3 py-2 text-center">
                           {item.offerEnabled && item.offerQuantity ? (
                             <Badge variant="destructive" className="text-xs">
-                              +{item.offerQuantity} Free
+                              +{item.offerQuantity} رایگان
                             </Badge>
                           ) : (
                             "-"
@@ -679,24 +661,24 @@ ${getCartTotal().toLocaleString()} T
           <div className="space-y-2">
             <Separator />
             <div className="flex justify-between">
-              <span>Products Cost (AED):</span>
+              <span>هزینه محصولات (درهم):</span>
               <span>{getItemTotalAed().toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
-              <span>Regular Products:</span>
-              <span>{getCartSubtotal().toLocaleString()} T</span>
+              <span>محصولات عادی:</span>
+              <span>{getCartSubtotal().toLocaleString()} تومان</span>
             </div>
             <div className="flex justify-between">
-              <span>Offer Products Shipping:</span>
-              <span>{getCartShipping().toLocaleString()} T</span>
+              <span>ارسال محصولات پیشنهاد ویژه:</span>
+              <span>{getCartShipping().toLocaleString()} تومان</span>
             </div>
             <div className="flex justify-between text-blue-600">
-              <span>Total CC Points:</span>
+              <span>مجموع امتیازات CC:</span>
               <span>{getTotalCC().toFixed(3)}</span>
             </div>
             {pricingSettings.discountPercentage > 0 && (
               <div className="flex justify-between text-green-600">
-                <span>Discount ({pricingSettings.discountPercentage}%):</span>
+                <span>تخفیف ({pricingSettings.discountPercentage}%):</span>
                 <span>
                   -
                   {Math.floor(
@@ -704,14 +686,14 @@ ${getCartTotal().toLocaleString()} T
                       pricingSettings.discountPercentage) /
                       100,
                   ).toLocaleString()}{" "}
-                  T
+                  تومان
                 </span>
               </div>
             )}
             <Separator />
             <div className="flex justify-between text-lg font-bold">
-              <span>Total Amount:</span>
-              <span>{getCartTotal().toLocaleString()} T</span>
+              <span>مبلغ کل:</span>
+              <span>{getCartTotal().toLocaleString()} تومان</span>
             </div>
           </div>
         </div>
@@ -720,7 +702,7 @@ ${getCartTotal().toLocaleString()} T
         <div className="mt-6 flex gap-2 border-t pt-4">
           <Button onClick={handlePrint} variant="outline" className="flex-1">
             <Printer className="mr-2 h-4 w-4" />
-            Print
+            چاپ
           </Button>
           <Button
             onClick={handleDownloadPDF}
@@ -728,7 +710,7 @@ ${getCartTotal().toLocaleString()} T
             className="flex-1"
           >
             <Download className="mr-2 h-4 w-4" />
-            Download PDF
+            دانلود PDF
           </Button>
           <Button
             onClick={handleGenerateInvoice}
@@ -738,12 +720,12 @@ ${getCartTotal().toLocaleString()} T
             {isSaving ? (
               <>
                 <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
-                Saving...
+                در حال ذخیره...
               </>
             ) : (
               <>
                 <FileText className="mr-2 h-4 w-4" />
-                Generate Invoice
+                ایجاد فاکتور
               </>
             )}
           </Button>

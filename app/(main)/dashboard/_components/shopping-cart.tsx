@@ -23,17 +23,17 @@ export function ShoppingCart() {
 
   if (items.length === 0) {
     return (
-      <Card>
+      <Card dir="rtl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Cart className="h-5 w-5" />
-            Shopping Cart
+            سبد خرید
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="py-8 text-center text-gray-500">
             <Cart className="mx-auto mb-4 h-12 w-12 opacity-50" />
-            <p>Your cart is empty</p>
+            <p>سبد خرید شما خالی است</p>
           </div>
         </CardContent>
       </Card>
@@ -41,11 +41,11 @@ export function ShoppingCart() {
   }
 
   return (
-    <Card>
+    <Card dir="rtl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Cart className="h-5 w-5" />
-          Shopping Cart ({items.length} items)
+          سبد خرید ({items.length} کالا)
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -54,15 +54,15 @@ export function ShoppingCart() {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h4 className="font-medium">{item.product_name}</h4>
-                <p className="text-sm text-gray-600">Code: {item.code}</p>
+                <p className="text-sm text-gray-600">کد: {item.code}</p>
                 <p className="text-sm text-gray-600">
-                  Base Price: {item.price.toFixed(2)} AED | CC Points:{" "}
+                  قیمت پایه: {item.price.toFixed(2)} درهم | امتیازات CC:{" "}
                   {item.cc.toFixed(3)}
                 </p>
 
                 {item.offerEnabled && item.offerQuantity && (
                   <p className="text-sm text-green-600">
-                    +{item.offerQuantity} free items (shipping only)
+                    +{item.offerQuantity} کالای رایگان (فقط هزینه ارسال)
                   </p>
                 )}
               </div>
@@ -76,11 +76,11 @@ export function ShoppingCart() {
               </Button>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={() => updateQuantity(item.code, item.quantity - 1)}
                   disabled={item.quantity <= 1}
                 >
@@ -100,7 +100,7 @@ export function ShoppingCart() {
                 />
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="icon"
                   onClick={() => updateQuantity(item.code, item.quantity + 1)}
                 >
                   <Plus className="h-3 w-3" />
@@ -111,7 +111,7 @@ export function ShoppingCart() {
                 <div className="text-sm text-gray-500">
                   Qty: {item.quantity}
                   {item.offerEnabled && item.offerQuantity
-                    ? ` (+${item.offerQuantity} free)`
+                    ? ` (+${item.offerQuantity} رایگان)`
                     : ""}
                 </div>
                 <div className="font-medium">
@@ -125,7 +125,7 @@ export function ShoppingCart() {
                         : 0)) *
                       (1 - state.pricingSettings.discountPercentage / 100),
                   ).toLocaleString()}{" "}
-                  T
+                  تومان
                 </div>
               </div>
             </div>
@@ -136,22 +136,20 @@ export function ShoppingCart() {
 
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span>Subtotal:</span>
-            <span>{getCartSubtotal().toLocaleString()} T</span>
+            <span>جمع جزء:</span>
+            <span>{getCartSubtotal().toLocaleString()} تومان</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span>Offer Shipping:</span>
-            <span>{getCartShipping().toLocaleString()} T</span>
+            <span>هزینه ارسال:</span>
+            <span>{getCartShipping().toLocaleString()} تومان</span>
           </div>
           <div className="flex justify-between text-sm text-blue-600">
-            <span>Total CC Points:</span>
+            <span>مجموع امتیازات CC:</span>
             <span>{getTotalCC().toFixed(3)}</span>
           </div>
           {state.pricingSettings.discountPercentage > 0 && (
             <div className="flex justify-between text-sm text-green-600">
-              <span>
-                Discount ({state.pricingSettings.discountPercentage}%):
-              </span>
+              <span>تخفیف ({state.pricingSettings.discountPercentage}%):</span>
               <span>
                 -
                 {Math.floor(
@@ -159,14 +157,14 @@ export function ShoppingCart() {
                     state.pricingSettings.discountPercentage) /
                     100,
                 ).toLocaleString()}{" "}
-                T
+                تومان
               </span>
             </div>
           )}
           <Separator />
           <div className="flex justify-between text-lg font-bold">
-            <span>Total:</span>
-            <span>{getCartTotal().toLocaleString()} T</span>
+            <span>مجموع:</span>
+            <span>{getCartTotal().toLocaleString()} تومان</span>
           </div>
         </div>
       </CardContent>

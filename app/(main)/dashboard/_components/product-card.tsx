@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useCart } from "@/contexts/cart-context";
 import { Product } from "@prisma/client";
-import { BadgePercent, CheckCircle, Package, ShoppingCart } from "lucide-react";
+import { BadgePercent, CheckCircle, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -42,16 +42,16 @@ export function ProductCard({ product }: ProductCardProps) {
     toast(
       <div className="flex items-start gap-3">
         <CheckCircle className="mt-1 h-5 w-5 text-green-600" />
-        <div className="flex flex-col">
+        <div className="flex flex-col text-right">
           <p className="text-sm font-semibold text-gray-800">
-            {product.product_name} added to cart!
+            {product.product_name} به سبد خرید اضافه شد!
           </p>
           <p className="text-xs text-gray-600">
-            Quantity: {quantity}{" "}
+            تعداد: {quantity}{" "}
             {offerEnabled && (
-              <span className="ml-2 inline-flex items-center text-green-700">
-                <BadgePercent className="mr-1 h-3 w-3" />+{offerQuantity} free
-                (shipping only)
+              <span className="ms-2 inline-flex items-center text-green-700">
+                <BadgePercent className="me-1 h-3 w-3" />+{offerQuantity} رایگان
+                (فقط هزینه ارسال)
               </span>
             )}
           </p>
@@ -74,7 +74,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="flex h-full flex-col transition-shadow hover:shadow-lg">
+    <Card className="flex h-full flex-col text-right transition-shadow hover:shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">
@@ -87,40 +87,46 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardHeader>
 
       <CardContent className="flex-1 space-y-4">
+        {/* Price details use justify-between which works correctly in RTL */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>Base Price (AED):</span>
-            <span className="font-medium">{product.price.toFixed(2)}</span>
+            <span>قیمت پایه (درهم):</span>
+            <span className="font-medium">
+              {product.price.toLocaleString("fa-IR")}
+            </span>
           </div>
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>CC Points:</span>
-            <span className="font-medium">{product.cc.toFixed(3)}</span>
+            <span>امتیازات CC:</span>
+            <span className="font-medium">
+              {product.cc.toLocaleString("fa-IR")}
+            </span>
           </div>
-
           <div className="border-t pt-2">
             <div className="flex items-center justify-between">
-              <span className="font-medium">Total (T):</span>
-              <div className="text-right">
+              <span className="font-medium">مجموع (تومان):</span>
+              <div className="text-left">
                 <div className="text-lg font-bold">
-                  {calculateDisplayPrice().toLocaleString()}
+                  {calculateDisplayPrice().toLocaleString("fa-IR")}
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Special Offer Section */}
         <div className="space-y-2 rounded-lg border border-orange-200 bg-orange-50 p-3">
           <div className="flex items-center justify-between">
             <Label
               htmlFor={`offer-${product.code}`}
               className="text-sm font-medium"
             >
-              Special Offer
+              پیشنهاد ویژه
             </Label>
             <Switch
               id={`offer-${product.code}`}
               checked={offerEnabled}
               onCheckedChange={setOfferEnabled}
+              dir="rtl" // Explicitly set direction for the Switch
             />
           </div>
           {offerEnabled && (
@@ -129,7 +135,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 htmlFor={`offer-quantity-${product.code}`}
                 className="text-xs text-orange-700"
               >
-                Additional products (pay shipping only):
+                محصولات اضافی (فقط پرداخت هزینه ارسال):
               </Label>
               <Input
                 id={`offer-quantity-${product.code}`}
@@ -139,22 +145,19 @@ export function ProductCard({ product }: ProductCardProps) {
                 onChange={(e) =>
                   setOfferQuantity(Math.max(0, parseInt(e.target.value) || 0))
                 }
-                className="w-full text-sm"
+                className="w-full text-right text-sm" // Align number input text to the right
               />
-              <div className="text-xs text-orange-700">
-                <Package className="mr-1 inline h-3 w-3" />
-                Get {offerQuantity} additional products for shipping cost only!
-              </div>
             </div>
           )}
         </div>
 
+        {/* Quantity Section */}
         <div className="space-y-2">
           <Label
             htmlFor={`quantity-${product.code}`}
             className="text-sm font-medium"
           >
-            Quantity
+            تعداد
           </Label>
           <Input
             id={`quantity-${product.code}`}
@@ -164,15 +167,15 @@ export function ProductCard({ product }: ProductCardProps) {
             onChange={(e) =>
               setQuantity(Math.max(0, parseInt(e.target.value) || 0))
             }
-            className="w-full"
+            className="w-full text-right" // Align number input text to the right
           />
         </div>
       </CardContent>
 
       <CardFooter>
         <Button onClick={handleAddToCart} className="w-full" size="sm">
-          <ShoppingCart className="mr-2 h-4 w-4" />
-          Add to Cart
+          <ShoppingCart className="me-2 h-4 w-4" />
+          افزودن به سبد خرید
         </Button>
       </CardFooter>
     </Card>

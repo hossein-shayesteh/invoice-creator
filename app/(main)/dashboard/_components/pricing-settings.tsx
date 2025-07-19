@@ -28,7 +28,7 @@ export function PricingSettings() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          Pricing Settings
+          تنظیمات قیمت‌گذاری
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -49,14 +49,14 @@ export function PricingSettings() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              Settings loaded from local storage
+              تنظیمات از حافظه محلی بارگذاری شد
             </p>
           </div>
         )}
         <div className="space-y-2">
           <Label htmlFor="exchange-rate" className="flex items-center gap-2">
             <DollarSign className="h-4 w-4" />
-            Exchange Rate (AED to T)
+            نرخ تبدیل ارز (درهم به تومان)
           </Label>
           <Input
             id="exchange-rate"
@@ -70,15 +70,15 @@ export function PricingSettings() {
             placeholder="15000"
           />
           <p className="text-xs text-gray-600">
-            Current rate: 1 AED ={" "}
-            {pricingSettings.exchangeRate.toLocaleString()} T
+            نرخ فعلی: 1 درهم = {pricingSettings.exchangeRate.toLocaleString()}{" "}
+            تومان
           </p>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="discount" className="flex items-center gap-2">
             <Percent className="h-4 w-4" />
-            Global Discount (%)
+            تخفیف کلی (%)
           </Label>
           <Input
             id="discount"
@@ -91,21 +91,20 @@ export function PricingSettings() {
             placeholder="0"
           />
           <p className="text-xs text-gray-600">
-            Applied to final total (after shipping)
+            اعمال شده به مجموع نهایی (پس از هزینه ارسال)
           </p>
         </div>
 
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
-          <h4 className="mb-2 font-medium text-blue-900">
-            Pricing Information
-          </h4>
+          <h4 className="mb-2 font-medium text-blue-900">اطلاعات قیمت‌گذاری</h4>
           <div className="space-y-1 text-sm text-blue-800">
-            <p>• Base prices are in AED and converted to T</p>
-            <p>• CC (shipping cost) is calculated per item</p>
+            <p>• قیمت‌های پایه به درهم هستند و به تومان تبدیل می‌شوند</p>
+            <p>• هزینه ارسال (CC) برای هر کالا محاسبه می‌شود</p>
             <p>
-              • Offers reduce product cost but shipping applies to all items
+              • پیشنهادات هزینه محصول را کاهش می‌دهند اما هزینه ارسال برای همه
+              اقلام اعمال می‌شود
             </p>
-            <p>• Discount is applied to the final total</p>
+            <p>• تخفیف به مجموع نهایی اعمال می‌شود</p>
           </div>
         </div>
       </CardContent>

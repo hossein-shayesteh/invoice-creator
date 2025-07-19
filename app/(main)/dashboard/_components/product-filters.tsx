@@ -29,41 +29,47 @@ export function ProductFilters({
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle dir="rtl" className="flex items-center gap-2">
           <Filter className="h-5 w-5" />
-          Search & Filter Products
+          جستجو و فیلتر محصولات
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex gap-4">
-        {/* Search */}
-        <div className="w-full space-y-2">
-          <Label htmlFor="search">Search Products</Label>
+      <CardContent className="flex flex-col gap-4 sm:flex-row">
+        {/* Sort Select */}
+        <div className="space-y-2">
+          <Label className="block text-right">مرتب‌سازی</Label>
+
+          <Select value={sortBy} onValueChange={SortByAction} dir="rtl">
+            <SelectTrigger className="w-full sm:w-[220px]">
+              <SelectValue placeholder="مرتب‌سازی محصولات" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name-asc">نام (الف تا ی)</SelectItem>
+              <SelectItem value="name-desc">نام (ی تا الف)</SelectItem>
+              <SelectItem value="price-asc">قیمت (کم به زیاد)</SelectItem>
+              <SelectItem value="price-desc">قیمت (زیاد به کم)</SelectItem>
+              <SelectItem value="code-asc">کد (الف تا ی)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Search Input */}
+        <div className="flex-1 space-y-2">
+          {/* 1. Explicitly align label text to the right */}
+          <Label htmlFor="search" className="block text-right">
+            جستجوی محصولات
+          </Label>
           <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+            <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
             <Input
               id="search"
               type="text"
-              placeholder="Search by product name or code..."
+              placeholder="جستجو بر اساس نام محصول یا کد"
               value={searchTerm}
               onChange={(e) => SearchTermAction(e.target.value)}
-              className="pl-10"
+              className="ps-10 text-right"
             />
           </div>
-        </div>
-        <div className="space-y-2">
-          <Label>Sort By</Label>
-          <Select value={sortBy} onValueChange={SortByAction}>
-            <SelectTrigger>
-              <SelectValue placeholder="Sort products" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-              <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-              <SelectItem value="price-asc">Price (Low to High)</SelectItem>
-              <SelectItem value="price-desc">Price (High to Low)</SelectItem>
-              <SelectItem value="code-asc">Code (A-Z)</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       </CardContent>
     </Card>

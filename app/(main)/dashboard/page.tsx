@@ -21,46 +21,48 @@ const DashboardPage = async () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 flex flex-col items-center justify-center">
           <h1 className="mb-2 text-4xl font-bold text-gray-900">
             Success Family
           </h1>
           <p className="text-gray-600">
-            Browse products, manage your cart, and generate professional
-            invoices
+            محصولات را مرور کنید، سبد خرید خود را مدیریت کنید و فاکتورهای
+            حرفه‌ای ایجاد کنید
           </p>
         </div>
 
         {/* Main Content */}
         <Tabs defaultValue="products" className="space-y-6">
           <TabsList className="flex w-full flex-wrap">
+            {/* The `gap-2` utility correctly handles spacing in both LTR and RTL. */}
             <TabsTrigger
-              value="products"
-              className="flex min-w-[120px] flex-1 items-center justify-center gap-1"
+              value="invoice"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
             >
-              <Package className="h-4 w-4 sm:mr-0" />
-              <span className="hidden sm:inline">Products</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="cart"
-              className="flex min-w-[120px] flex-1 items-center justify-center gap-1"
-            >
-              <CartIcon className="h-4 w-4 sm:mr-0" />
-              <span className="sm:inline">Cart</span>
+              <span className="sm:inline">فاکتور</span>
+              <FileText className="h-4 w-4" />
             </TabsTrigger>
             <TabsTrigger
               value="settings"
-              className="flex min-w-[120px] flex-1 items-center justify-center gap-1"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
             >
-              <Settings className="h-4 w-4 sm:mr-0" />
-              <span className="sm:inline">Settings</span>
+              <span className="sm:inline">تنظیمات</span>
+              <Settings className="h-4 w-4" />
             </TabsTrigger>
             <TabsTrigger
-              value="invoice"
-              className="flex min-w-[120px] flex-1 items-center justify-center gap-1"
+              value="cart"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
             >
-              <FileText className="h-4 w-4 sm:mr-0" />
-              <span className="sm:inline">Invoice</span>
+              <span className="sm:inline">سبد خرید</span>
+              <CartIcon className="h-4 w-4" />
+            </TabsTrigger>
+            <TabsTrigger
+              value="products"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
+            >
+              {/* Removed the LTR-specific `sm:mr-0` class from the icon */}
+              <span className="hidden sm:inline">محصولات</span>
+              <Package className="h-4 w-4" />
             </TabsTrigger>
           </TabsList>
 
