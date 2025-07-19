@@ -23,7 +23,7 @@ export function ShoppingCart() {
 
   if (items.length === 0) {
     return (
-      <Card dir="rtl">
+      <Card className="text-right" dir="rtl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Cart className="h-5 w-5" />
@@ -41,11 +41,11 @@ export function ShoppingCart() {
   }
 
   return (
-    <Card dir="rtl">
+    <Card className="text-right" dir="rtl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Cart className="h-5 w-5" />
-          سبد خرید ({items.length} کالا)
+          سبد خرید ({items.length.toLocaleString("fa-IR")} کالا)
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -56,13 +56,24 @@ export function ShoppingCart() {
                 <h4 className="font-medium">{item.product_name}</h4>
                 <p className="text-sm text-gray-600">کد: {item.code}</p>
                 <p className="text-sm text-gray-600">
-                  قیمت پایه: {item.price.toFixed(2)} درهم | امتیازات CC:{" "}
-                  {item.cc.toFixed(3)}
+                  قیمت پایه:{" "}
+                  {item.price.toLocaleString("fa-IR", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}{" "}
+                  درهم
                 </p>
-
+                <p className="text-sm text-gray-600">
+                  امتیاز:{" "}
+                  {item.cc.toLocaleString("fa-IR", {
+                    minimumFractionDigits: 3,
+                    maximumFractionDigits: 3,
+                  })}
+                </p>
                 {item.offerEnabled && item.offerQuantity && (
                   <p className="text-sm text-green-600">
-                    +{item.offerQuantity} کالای رایگان (فقط هزینه ارسال)
+                    +{item.offerQuantity.toLocaleString("fa-IR")} کالای رایگان
+                    (فقط هزینه ارسال)
                   </p>
                 )}
               </div>
@@ -76,7 +87,7 @@ export function ShoppingCart() {
               </Button>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <Button
                   variant="outline"
@@ -106,14 +117,7 @@ export function ShoppingCart() {
                   <Plus className="h-3 w-3" />
                 </Button>
               </div>
-
               <div className="text-right">
-                <div className="text-sm text-gray-500">
-                  Qty: {item.quantity}
-                  {item.offerEnabled && item.offerQuantity
-                    ? ` (+${item.offerQuantity} رایگان)`
-                    : ""}
-                </div>
                 <div className="font-medium">
                   {Math.floor(
                     (item.price *
@@ -124,7 +128,7 @@ export function ShoppingCart() {
                         ? item.shipment * item.offerQuantity
                         : 0)) *
                       (1 - state.pricingSettings.discountPercentage / 100),
-                  ).toLocaleString()}{" "}
+                  ).toLocaleString("fa-IR")}{" "}
                   تومان
                 </div>
               </div>
@@ -136,35 +140,40 @@ export function ShoppingCart() {
 
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span>جمع جزء:</span>
-            <span>{getCartSubtotal().toLocaleString()} تومان</span>
+            <span>جمع اقلام:</span>
+            <span>{getCartSubtotal().toLocaleString("fa-IR")} تومان</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>هزینه ارسال:</span>
-            <span>{getCartShipping().toLocaleString()} تومان</span>
+            <span>{getCartShipping().toLocaleString("fa-IR")} تومان</span>
           </div>
           <div className="flex justify-between text-sm text-blue-600">
             <span>مجموع امتیازات CC:</span>
-            <span>{getTotalCC().toFixed(3)}</span>
+            <span>{getTotalCC().toLocaleString("fa-IR")}</span>
           </div>
           {state.pricingSettings.discountPercentage > 0 && (
             <div className="flex justify-between text-sm text-green-600">
-              <span>تخفیف ({state.pricingSettings.discountPercentage}%):</span>
               <span>
-                -
+                تخفیف (%
+                {state.pricingSettings.discountPercentage.toLocaleString(
+                  "fa-IR",
+                )}
+                ):
+              </span>
+              <span>
                 {Math.floor(
                   ((getCartSubtotal() + getCartShipping()) *
                     state.pricingSettings.discountPercentage) /
                     100,
-                ).toLocaleString()}{" "}
-                تومان
+                ).toLocaleString("fa-IR")}
+                - تومان
               </span>
             </div>
           )}
           <Separator />
           <div className="flex justify-between text-lg font-bold">
             <span>مجموع:</span>
-            <span>{getCartTotal().toLocaleString()} تومان</span>
+            <span>{getCartTotal().toLocaleString("fa-IR")} تومان</span>
           </div>
         </div>
       </CardContent>

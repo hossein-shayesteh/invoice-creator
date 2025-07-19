@@ -50,17 +50,17 @@ export function InvoiceGenerator() {
 
   if (items.length === 0) {
     return (
-      <Card>
+      <Card className="text-right" dir="rtl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Invoice Generator
+            ایجاد فاکتور
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="py-8 text-center text-gray-500">
             <FileText className="mx-auto mb-4 h-12 w-12 opacity-50" />
-            <p>Add items to cart to generate invoice</p>
+            <p>برای ایجاد فاکتور، ابتدا کالاها را به سبد خرید اضافه کنید</p>
           </div>
         </CardContent>
       </Card>
@@ -71,7 +71,7 @@ export function InvoiceGenerator() {
 
   const generateInvoiceNumber = () => {
     const date = new Date();
-    const formatted = format(date, "yyyy/MM/dd-HH:mm");
+    const formatted = format(date, "yyyy/MM/dd - HH:mm");
     return `INV - ${session?.user.idNumber} - ${formatted}`;
   };
 
@@ -404,7 +404,7 @@ ${getCartTotal().toLocaleString()} T
     // Total CC Points (blue color)
     currentY += 6;
     doc.setTextColor(37, 99, 235); // Blue color
-    doc.text("مجموع امتیازات CC:", totalsX, currentY);
+    doc.text("Total CC:", totalsX, currentY);
     doc.text(`${getTotalCC().toFixed(3)}`, valuesX, currentY, {
       align: "right",
     });
@@ -423,18 +423,9 @@ ${getCartTotal().toLocaleString()} T
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(...headingColor);
-    doc.text("مبلغ کل:", totalsX, currentY);
+    doc.text("Total Cost:", totalsX, currentY);
     doc.text(`${getCartTotal().toLocaleString()} T`, valuesX, currentY, {
       align: "right",
-    });
-
-    // Footer
-    currentY = 280;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(...grayText);
-    doc.text("از کسب و کار شما متشکریم!", 105, currentY, {
-      align: "center",
     });
 
     // Save the PDF
@@ -508,7 +499,7 @@ ${getCartTotal().toLocaleString()} T
   const currentDate = format(new Date(), "PPP");
 
   return (
-    <Card>
+    <Card className="text-right" dir="rtl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FileText className="h-5 w-5" />
@@ -529,7 +520,26 @@ ${getCartTotal().toLocaleString()} T
           </div>
 
           {/* Invoice Details */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 text-right">
+            <div>
+              <h3 className="mb-2 font-semibold">خلاصه سفارش</h3>
+              <p className="text-sm">
+                <strong>تعداد کل اقلام:</strong>{" "}
+                {items
+                  .reduce((sum, item) => sum + item.quantity, 0)
+                  .toLocaleString("fa-IR")}
+              </p>
+              <p className="text-sm">
+                <strong>محصولات منحصر به فرد:</strong>{" "}
+                {items.length.toLocaleString("fa-IR")}
+              </p>
+              {pricingSettings.discountPercentage > 0 && (
+                <p className="text-sm">
+                  <strong>تخفیف:</strong>{" "}
+                  {pricingSettings.discountPercentage.toLocaleString("fa-IR")}%
+                </p>
+              )}
+            </div>
             <div>
               <h3 className="mb-2 font-semibold">جزئیات فاکتور</h3>
               <p className="text-sm">
@@ -539,24 +549,9 @@ ${getCartTotal().toLocaleString()} T
                 <strong>تاریخ:</strong> {currentDate}
               </p>
               <p className="text-sm">
-                <strong>نرخ تبدیل ارز:</strong> 1 درهم ={" "}
-                {pricingSettings.exchangeRate.toLocaleString()} تومان
+                <strong>نرخ تبدیل ارز:</strong> ۱ درهم ={" "}
+                {pricingSettings.exchangeRate.toLocaleString("fa-IR")} تومان
               </p>
-            </div>
-            <div>
-              <h3 className="mb-2 font-semibold">خلاصه سفارش</h3>
-              <p className="text-sm">
-                <strong>تعداد کل اقلام:</strong>{" "}
-                {items.reduce((sum, item) => sum + item.quantity, 0)}
-              </p>
-              <p className="text-sm">
-                <strong>محصولات منحصر به فرد:</strong> {items.length}
-              </p>
-              {pricingSettings.discountPercentage > 0 && (
-                <p className="text-sm">
-                  <strong>تخفیف:</strong> {pricingSettings.discountPercentage}%
-                </p>
-              )}
             </div>
           </div>
 
@@ -564,29 +559,20 @@ ${getCartTotal().toLocaleString()} T
           <div>
             <h3 className="mb-3 font-semibold">اقلام سفارش</h3>
             <div className="overflow-x-auto">
-              <table className="w-full border border-gray-200">
-                <thead>
+              <table className="w-full border border-gray-200 text-right">
+                <thead className="bg-gray-50">
                   <tr>
-                    <th className="border border-gray-200 px-3 py-2">کد</th>
-                    <th className="border border-gray-200 px-3 py-2">محصول</th>
-                    <th className="border border-gray-200 px-3 py-2 text-center">
+                    <th className="border p-2 font-semibold">کد</th>
+                    <th className="border p-2 font-semibold">محصول</th>
+                    <th className="border p-2 text-center font-semibold">
                       تعداد
                     </th>
-                    <th className="border border-gray-200 px-3 py-2 text-right">
-                      قیمت واحد
+                    <th className="border p-2 font-semibold">قیمت واحد</th>
+                    <th className="border p-2 font-semibold">امتیازات CC</th>
+                    <th className="border p-2 text-center font-semibold">
+                      پیشنهاد
                     </th>
-                    <th className="border border-gray-200 px-3 py-2 text-right">
-                      هزینه عادی (تومان)
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-right">
-                      امتیازات CC
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-center">
-                      پیشنهاد ویژه
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-right">
-                      جمع کل (تومان)
-                    </th>
+                    <th className="border p-2 font-semibold">جمع کل</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -601,53 +587,51 @@ ${getCartTotal().toLocaleString()} T
                           2100),
                     );
 
-                    // برای محصولات با پیشنهاد ویژه، فقط هزینه ارسال اضافه می‌شود
                     let offerShippingCost = 0;
                     if (item.offerEnabled && item.offerQuantity) {
                       offerShippingCost = Math.floor(
                         item.offerQuantity * item.price * 2100,
                       );
                     }
-
                     const finalTotal = regularProductCost + offerShippingCost;
-                    const totalCC = item.cc * item.quantity;
 
                     return (
-                      <tr key={item.code}>
-                        <td className="border border-gray-200 px-3 py-2">
+                      <tr key={item.code} className="even:bg-gray-50">
+                        <td className="border p-2 font-mono text-sm">
                           {item.code}
                         </td>
-                        <td className="border border-gray-200 px-3 py-2">
-                          {item.product_name}
-                        </td>
-                        <td className="border border-gray-200 px-3 py-2 text-center">
-                          {item.quantity}
+                        <td className="border p-2">{item.product_name}</td>
+                        <td className="border p-2 text-center">
+                          {item.quantity.toLocaleString("fa-IR")}
                           {item.offerEnabled && item.offerQuantity && (
                             <div className="text-xs text-green-600">
-                              (+{item.offerQuantity} رایگان)
+                              ( {item.offerQuantity.toLocaleString("fa-IR")}+
+                              رایگان)
                             </div>
                           )}
                         </td>
-                        <td className="border border-gray-200 px-3 py-2 text-right">
-                          {item.price.toFixed(2)}
+                        <td className="border p-2">
+                          {item.price.toLocaleString("fa-IR", {
+                            minimumFractionDigits: 2,
+                          })}
                         </td>
-                        <td className="border border-gray-200 px-3 py-2 text-right">
-                          {regularProductCost.toLocaleString()}
+                        <td className="border p-2">
+                          {item.cc.toLocaleString("fa-IR", {
+                            minimumFractionDigits: 3,
+                          })}
                         </td>
-                        <td className="border border-gray-200 px-3 py-2 text-right">
-                          {totalCC.toFixed(3)}
-                        </td>
-                        <td className="border border-gray-200 px-3 py-2 text-center">
+                        <td className="border p-2 text-center">
                           {item.offerEnabled && item.offerQuantity ? (
                             <Badge variant="destructive" className="text-xs">
-                              +{item.offerQuantity} رایگان
+                              {item.offerQuantity.toLocaleString("fa-IR")}+
+                              رایگان
                             </Badge>
                           ) : (
                             "-"
                           )}
                         </td>
-                        <td className="border border-gray-200 px-3 py-2 text-right">
-                          {finalTotal.toLocaleString()}
+                        <td className="border p-2 font-semibold">
+                          {finalTotal.toLocaleString("fa-IR")}
                         </td>
                       </tr>
                     );
@@ -658,34 +642,38 @@ ${getCartTotal().toLocaleString()} T
           </div>
 
           {/* Totals */}
-          <div className="space-y-2">
+          <div className="space-y-2 pt-4">
             <Separator />
             <div className="flex justify-between">
               <span>هزینه محصولات (درهم):</span>
-              <span>{getItemTotalAed().toLocaleString()}</span>
+              <span>{getItemTotalAed().toLocaleString("fa-IR")}</span>
             </div>
             <div className="flex justify-between">
               <span>محصولات عادی:</span>
-              <span>{getCartSubtotal().toLocaleString()} تومان</span>
+              <span>{getCartSubtotal().toLocaleString("fa-IR")} تومان</span>
             </div>
             <div className="flex justify-between">
               <span>ارسال محصولات پیشنهاد ویژه:</span>
-              <span>{getCartShipping().toLocaleString()} تومان</span>
+              <span>{getCartShipping().toLocaleString("fa-IR")} تومان</span>
             </div>
             <div className="flex justify-between text-blue-600">
               <span>مجموع امتیازات CC:</span>
-              <span>{getTotalCC().toFixed(3)}</span>
+              <span>{getTotalCC().toLocaleString("fa-IR")}</span>
             </div>
             {pricingSettings.discountPercentage > 0 && (
               <div className="flex justify-between text-green-600">
-                <span>تخفیف ({pricingSettings.discountPercentage}%):</span>
+                <span>
+                  تخفیف (
+                  {pricingSettings.discountPercentage.toLocaleString("fa-IR")}
+                  %):
+                </span>
                 <span>
                   -
                   {Math.floor(
                     ((getCartSubtotal() + getCartShipping()) *
                       pricingSettings.discountPercentage) /
                       100,
-                  ).toLocaleString()}{" "}
+                  ).toLocaleString("fa-IR")}{" "}
                   تومان
                 </span>
               </div>
@@ -693,23 +681,23 @@ ${getCartTotal().toLocaleString()} T
             <Separator />
             <div className="flex justify-between text-lg font-bold">
               <span>مبلغ کل:</span>
-              <span>{getCartTotal().toLocaleString()} تومان</span>
+              <span>{getCartTotal().toLocaleString("fa-IR")} تومان</span>
             </div>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-6 flex gap-2 border-t pt-4">
+        <div className="mt-6 flex flex-row-reverse gap-2 border-t pt-4">
           <Button onClick={handlePrint} variant="outline" className="flex-1">
-            <Printer className="mr-2 h-4 w-4" />
-            چاپ
+            <Printer className="me-2 h-4 w-4" />
+            خروجی متنی
           </Button>
           <Button
             onClick={handleDownloadPDF}
             variant="outline"
             className="flex-1"
           >
-            <Download className="mr-2 h-4 w-4" />
+            <Download className="me-2 h-4 w-4" />
             دانلود PDF
           </Button>
           <Button
@@ -719,12 +707,12 @@ ${getCartTotal().toLocaleString()} T
           >
             {isSaving ? (
               <>
-                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                <span className="me-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
                 در حال ذخیره...
               </>
             ) : (
               <>
-                <FileText className="mr-2 h-4 w-4" />
+                <FileText className="me-2 h-4 w-4" />
                 ایجاد فاکتور
               </>
             )}
