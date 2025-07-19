@@ -172,7 +172,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
   return (
     <>
       <div className="flex justify-between">
-        <h2 className="text-xl font-semibold">User Management</h2>
+        <h2 className="text-xl font-semibold">مدیریت کاربران</h2>
         <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}>
           <DialogTrigger asChild>
             <Button
@@ -183,54 +183,58 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              Add User
+              افزودن کاربر
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          {/* 1. Set direction and alignment for the Dialog */}
+          <DialogContent className="text-right" dir="rtl">
             <DialogHeader>
-              <DialogTitle>Add New User</DialogTitle>
+              <DialogTitle>افزودن کاربر جدید</DialogTitle>
               <DialogDescription>
-                Fill in the user details below.
+                جزئیات کاربر را در زیر وارد کنید.
               </DialogDescription>
             </DialogHeader>
 
             <form action={handleCreateUser} className="space-y-4">
               <div className="grid gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="name">Full Name *</Label>
+                  <Label htmlFor="name">نام کامل *</Label>
                   <Input
                     id="name"
                     name="name"
                     value={userFormData.name}
                     onChange={handleUserInputChange}
                     required
+                    className="text-right"
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="username">Username *</Label>
+                  <Label htmlFor="username">نام کاربری *</Label>
                   <Input
                     id="username"
                     name="username"
                     value={userFormData.username}
                     onChange={handleUserInputChange}
                     required
+                    className="text-right"
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="idNumber">Id Number *</Label>
+                  <Label htmlFor="idNumber">شماره شناسایی *</Label>
                   <Input
                     id="idNumber"
                     name="idNumber"
                     value={userFormData.idNumber}
                     onChange={handleUserInputChange}
                     required
+                    className="text-right"
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="password">Password *</Label>
+                  <Label htmlFor="password">رمز عبور *</Label>
                   <Input
                     id="password"
                     name="password"
@@ -238,16 +242,20 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                     value={userFormData.password}
                     onChange={handleUserInputChange}
                     required
+                    className="text-right"
                   />
                 </div>
 
-                <div className="flex items-center space-x-2">
+                {/* 2. Use direction-agnostic 'gap' for spacing */}
+                <div className="flex items-center gap-2">
                   <Checkbox
                     id="isAdmin"
                     checked={userFormData.isAdmin}
                     onCheckedChange={handleCheckboxChange}
                   />
-                  <Label htmlFor="isAdmin">Admin User</Label>
+                  <Label htmlFor="isAdmin" className="p-0">
+                    کاربر ادمین
+                  </Label>
                 </div>
               </div>
 
@@ -260,76 +268,78 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                     setUserDialogOpen(false);
                   }}
                 >
-                  Cancel
+                  انصراف
                 </Button>
-                <Button type="submit">Create</Button>
+                <Button type="submit">ایجاد</Button>
               </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
       </div>
 
-      <Card>
+      <Card dir="rtl" className="text-right">
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Username</TableHead>
-                <TableHead>ID Number</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="text-center">Invoices</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right">نام</TableHead>
+                <TableHead className="text-right">نام کاربری</TableHead>
+                <TableHead className="text-right">شماره شناسایی</TableHead>
+                <TableHead className="text-right">نقش</TableHead>
+                <TableHead className="text-center">فاکتورها</TableHead>
+                <TableHead className="text-right">تاریخ ایجاد</TableHead>
+                <TableHead className="text-center">اقدامات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">
-                    No users found
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    کاربری یافت نشد.
                   </TableCell>
                 </TableRow>
               ) : (
                 users.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell>{user.name}</TableCell>
+                    <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.idNumber}</TableCell>
+                    <TableCell className="font-mono">{user.idNumber}</TableCell>
                     <TableCell>
                       <Badge
-                        variant={user.role === "ADMIN" ? "default" : "outline"}
+                        variant={
+                          user.role === "ADMIN" ? "default" : "secondary"
+                        }
                       >
-                        {user.role}
+                        {user.role === "ADMIN" ? "ادمین" : "کاربر"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-center">
-                      {/*TODO*/}
-                      {userInvoices.length || 0}
+                      {(userInvoices.length || 0).toLocaleString("fa-IR")}
                     </TableCell>
                     <TableCell>{formatDate(user.createdAt)}</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
+                    <TableCell className="text-center">
+                      <DropdownMenu dir="rtl">
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuLabel>اقدامات</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() => fetchUserDetails(user.id)}
+                            className="flex cursor-pointer items-center gap-2"
                           >
-                            <FileText className="mr-2 h-4 w-4" />
-                            View Details
+                            <FileText className="h-4 w-4" />
+                            <span>مشاهده جزئیات</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDeleteUser(user.id)}
-                            className="text-red-600"
+                            className="flex cursor-pointer items-center gap-2 text-red-600"
                           >
-                            <Trash className="mr-2 h-4 w-4" />
-                            Delete
+                            <Trash className="h-4 w-4" />
+                            <span>حذف</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -344,34 +354,34 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
 
       {/* User Details Dialog */}
       <Dialog open={userDetailsOpen} onOpenChange={setUserDetailsOpen}>
-        <DialogContent className={"sm:max-w-4xl"}>
+        <DialogContent className={"text-right sm:max-w-4xl"} dir="rtl">
           <DialogHeader>
-            <DialogTitle>User Details</DialogTitle>
+            <DialogTitle>جزئیات کاربر</DialogTitle>
           </DialogHeader>
 
           {selectedUser && (
             <div className="w-full space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <h3 className="mb-2 font-semibold">User Information</h3>
+                  <h3 className="mb-2 font-semibold">اطلاعات کاربر</h3>
                   <p>
-                    <strong>Name:</strong> {selectedUser.name}
+                    <strong>نام:</strong> {selectedUser.name}
                   </p>
                   <p>
-                    <strong>Username:</strong> {selectedUser.username}
+                    <strong>نام کاربری:</strong> {selectedUser.username}
                   </p>
                   <p>
-                    <strong>Role:</strong>{" "}
+                    <strong>نقش:</strong>{" "}
                     <Badge
                       variant={
-                        selectedUser.role === "ADMIN" ? "default" : "outline"
+                        selectedUser.role === "ADMIN" ? "default" : "secondary"
                       }
                     >
-                      {selectedUser.role}
+                      {selectedUser.role === "ADMIN" ? "ادمین" : "کاربر"}
                     </Badge>
                   </p>
                   <p>
-                    <strong>Created:</strong>{" "}
+                    <strong>تاریخ ایجاد:</strong>{" "}
                     {formatDate(selectedUser.createdAt)}
                   </p>
                 </div>
@@ -379,38 +389,48 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
 
               <div>
                 <h3 className="mb-2 font-semibold">
-                  Invoices ({userInvoices.length})
+                  فاکتورها ({userInvoices.length.toLocaleString("fa-IR")})
                 </h3>
                 {userInvoices.length === 0 ? (
-                  <p className="text-gray-500">No invoices found</p>
+                  <p className="py-8 text-center text-gray-500">
+                    فاکتوری یافت نشد.
+                  </p>
                 ) : (
                   <ScrollArea className={"h-[300px] w-full"}>
-                    <Table>
+                    <Table dir="rtl">
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Invoice #</TableHead>
-                          <TableHead className="text-right">Total</TableHead>
                           <TableHead className="text-right">
-                            CC Points
+                            شماره فاکتور
                           </TableHead>
-                          <TableHead>Created</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
+                          <TableHead className="text-right">مبلغ کل</TableHead>
+                          <TableHead className="text-right">
+                            امتیاز CC
+                          </TableHead>
+                          <TableHead className="text-right">
+                            تاریخ ایجاد
+                          </TableHead>
+                          <TableHead className="text-center">اقدامات</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {userInvoices.map((invoice) => (
                           <TableRow key={invoice.id}>
-                            <TableCell>{invoice.invoiceNumber}</TableCell>
-                            <TableCell className="text-right">
-                              {invoice.total.toLocaleString()} T
+                            <TableCell className="font-mono">
+                              {invoice.invoiceNumber}
                             </TableCell>
                             <TableCell className="text-right">
-                              {invoice.totalCC.toFixed(3)}
+                              {invoice.total.toLocaleString("fa-IR")} تومان
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {invoice.totalCC.toLocaleString("fa-IR", {
+                                minimumFractionDigits: 3,
+                              })}
                             </TableCell>
                             <TableCell>
                               {formatDate(invoice.createdAt)}
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="text-center">
                               <Button
                                 variant="ghost"
                                 size="icon"

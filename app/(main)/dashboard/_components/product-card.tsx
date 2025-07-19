@@ -103,9 +103,9 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
           <div className="border-t pt-2">
             <div className="flex items-center justify-between">
-              <span className="font-medium">مجموع (تومان):</span>
+              <div className="text-sm">مجموع (تومان):</div>
               <div className="text-left">
-                <div className="text-lg font-bold">
+                <div className="font-bold">
                   {calculateDisplayPrice().toLocaleString("fa-IR")}
                 </div>
               </div>
