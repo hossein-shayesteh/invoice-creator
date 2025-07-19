@@ -13,21 +13,26 @@ const AdminPage = async () => {
   const products = await getAllProducts();
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-6 text-3xl font-bold">Admin Dashboard</h1>
+    // 1. Set direction and text alignment for the entire page
+    <div className="container mx-auto px-4 py-8 text-right" dir="rtl">
+      <h1 className="mb-6 text-3xl font-bold">داشبورد ادمین</h1>
 
-      <Tabs defaultValue="products" className="space-y-6">
+      <Tabs defaultValue="products" className="space-y-6" dir="rtl">
         <TabsList>
+          {/* 2. Translated tab titles */}
           <TabsTrigger
             value="products"
-            className="flex w-40 items-center gap-2"
+            className="flex w-40 items-center justify-center gap-2"
           >
             <Package className="h-4 w-4" />
-            Products
+            محصولات
           </TabsTrigger>
-          <TabsTrigger value="users" className="flex w-40 items-center gap-2">
+          <TabsTrigger
+            value="users"
+            className="flex w-40 items-center justify-center gap-2"
+          >
             <User className="h-4 w-4" />
-            Users
+            کاربران
           </TabsTrigger>
         </TabsList>
 

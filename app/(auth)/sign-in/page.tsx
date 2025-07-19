@@ -7,29 +7,39 @@ import { Label } from "@/components/ui/label";
 
 const SignInPage = () => {
   return (
-    <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <Card className={"flex flex-col gap-6"}>
+    <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6">
+      <div className="w-full max-w-sm">
+        {/* 1. Set the direction and default text alignment for the entire card */}
+        <Card className="text-right" dir="rtl">
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">خوش آمدید</CardTitle>
+            <CardTitle className="text-2xl">خوش آمدید</CardTitle>
           </CardHeader>
           <CardContent>
             <form action={handleSignIn}>
-              <div className="grid gap-6">
+              <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="username">نام کاربری</Label>
-                  <Input id="username" name="username" type="text" required />
+                  {/* 2. Align input text to the right */}
+                  <Input
+                    id="username"
+                    name="username"
+                    type="text"
+                    required
+                    className="text-right"
+                  />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="password">رمز</Label>
+                  <Label htmlFor="password">رمز عبور</Label>
+                  {/* 2. Align input text to the right */}
                   <Input
                     id="password"
                     name="password"
                     type="password"
                     required
+                    className="text-right"
                   />
                 </div>
-                <Button type="submit" className="w-full dark:text-gray-100">
+                <Button type="submit" className="w-full">
                   ورود
                 </Button>
               </div>

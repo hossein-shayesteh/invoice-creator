@@ -179,8 +179,8 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
 
   return (
     <>
-      <div className="flex justify-between">
-        <h2 className="text-xl font-semibold">Product Management</h2>
+      <div className="flex justify-between" dir="rtl">
+        <h2 className="text-xl font-semibold">مدیریت محصولات</h2>
         <Dialog open={productDialogOpen} onOpenChange={setProductDialogOpen}>
           <DialogTrigger asChild>
             <Button
@@ -191,45 +191,50 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              Add Product
+              افزودن محصول
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          {/* 1. Set direction and alignment for the Dialog Content */}
+          <DialogContent className="text-right">
             <DialogHeader>
               <DialogTitle>
-                {editingProduct ? "Edit Product" : "Add New Product"}
+                {editingProduct ? "ویرایش محصول" : "افزودن محصول جدید"}
               </DialogTitle>
               <DialogDescription>
-                Fill in the product details below.
+                جزئیات محصول را در زیر وارد کنید.
               </DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleProductSubmit} className="space-y-4">
               <div className="grid gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="code">Product Code *</Label>
+                  {/* 3. Translated form labels */}
+                  <Label htmlFor="code">کد محصول *</Label>
+                  {/* 4. Aligned input text to the right */}
                   <Input
                     id="code"
                     name="code"
                     value={productFormData.code}
                     onChange={handleProductInputChange}
                     required
+                    className="text-right"
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="product_name">Product Name *</Label>
+                  <Label htmlFor="product_name">نام محصول *</Label>
                   <Input
                     id="product_name"
                     name="product_name"
                     value={productFormData.product_name}
                     onChange={handleProductInputChange}
                     required
+                    className="text-right"
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="cc">CC Points</Label>
+                  <Label htmlFor="cc">امتیازات CC</Label>
                   <Input
                     id="cc"
                     name="cc"
@@ -237,11 +242,12 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                     step="0.001"
                     value={productFormData.cc}
                     onChange={handleProductInputChange}
+                    className="text-right"
                   />
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="price">Price (AED)</Label>
+                  <Label htmlFor="price">قیمت (درهم)</Label>
                   <Input
                     id="price"
                     name="price"
@@ -249,11 +255,13 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                     step="0.01"
                     value={productFormData.price}
                     onChange={handleProductInputChange}
+                    className="text-right"
                   />
                 </div>
               </div>
 
               <DialogFooter>
+                {/* 5. Translated button text */}
                 <Button
                   type="button"
                   variant="outline"
@@ -262,10 +270,10 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                     setProductDialogOpen(false);
                   }}
                 >
-                  Cancel
+                  انصراف
                 </Button>
                 <Button type="submit">
-                  {editingProduct ? "Update" : "Create"}
+                  {editingProduct ? "به‌روزرسانی" : "ایجاد"}
                 </Button>
               </DialogFooter>
             </form>
@@ -280,58 +288,65 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
         SortByAction={setSortBy}
       />
 
-      <Card>
+      <Card dir="rtl" className="text-right">
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Code</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="text-right">CC Points</TableHead>
-                <TableHead className="text-right">Price (AED)</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right">کد</TableHead>
+                <TableHead className="text-right">نام محصول</TableHead>
+                <TableHead className="text-right">امتیاز CC</TableHead>
+                <TableHead className="text-right">قیمت (درهم)</TableHead>
+                <TableHead className="text-center">اقدامات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredProducts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">
-                    No products found
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    محصولی یافت نشد.
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredProducts.map((product) => (
                   <TableRow key={product.id}>
-                    <TableCell>{product.code}</TableCell>
-                    <TableCell>{product.product_name}</TableCell>
-                    <TableCell className="text-right">
-                      {product.cc.toFixed(3)}
+                    <TableCell className="font-mono">{product.code}</TableCell>
+                    <TableCell className="font-medium">
+                      {product.product_name}
                     </TableCell>
                     <TableCell className="text-right">
-                      {product.price.toFixed(2)}
+                      {product.cc.toLocaleString("fa-IR", {
+                        minimumFractionDigits: 3,
+                      })}
                     </TableCell>
                     <TableCell className="text-right">
-                      <DropdownMenu>
+                      {product.price.toLocaleString("fa-IR", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <DropdownMenu dir="rtl">
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuLabel>اقدامات</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() => openProductEditDialog(product)}
+                            className="flex cursor-pointer items-center gap-2"
                           >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
+                            <Pencil className="h-4 w-4" />
+                            <span>ویرایش</span>
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDeleteProduct(product.id)}
-                            className="text-red-600"
+                            className="flex cursor-pointer items-center gap-2 text-red-600"
                           >
-                            <Trash className="mr-2 h-4 w-4" />
-                            Delete
+                            <Trash className="h-4 w-4" />
+                            <span>حذف</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

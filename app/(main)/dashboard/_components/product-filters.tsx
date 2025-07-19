@@ -27,7 +27,7 @@ export function ProductFilters({
   SortByAction,
 }: ProductFiltersProps) {
   return (
-    <Card className="mb-6">
+    <Card className="mb-6" dir="rtl">
       <CardHeader>
         <CardTitle dir="rtl" className="flex items-center gap-2">
           <Filter className="h-5 w-5" />
@@ -35,24 +35,6 @@ export function ProductFilters({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 sm:flex-row">
-        {/* Sort Select */}
-        <div className="space-y-2">
-          <Label className="block text-right">مرتب‌سازی</Label>
-
-          <Select value={sortBy} onValueChange={SortByAction} dir="rtl">
-            <SelectTrigger className="w-full sm:w-[220px]">
-              <SelectValue placeholder="مرتب‌سازی محصولات" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="name-asc">نام (الف تا ی)</SelectItem>
-              <SelectItem value="name-desc">نام (ی تا الف)</SelectItem>
-              <SelectItem value="price-asc">قیمت (کم به زیاد)</SelectItem>
-              <SelectItem value="price-desc">قیمت (زیاد به کم)</SelectItem>
-              <SelectItem value="code-asc">کد (الف تا ی)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
         {/* Search Input */}
         <div className="flex-1 space-y-2">
           {/* 1. Explicitly align label text to the right */}
@@ -70,6 +52,24 @@ export function ProductFilters({
               className="ps-10 text-right"
             />
           </div>
+        </div>
+
+        {/* Sort Select */}
+        <div className="space-y-2">
+          <Label className="block text-right">مرتب‌سازی</Label>
+
+          <Select value={sortBy} onValueChange={SortByAction} dir="rtl">
+            <SelectTrigger className="w-full sm:w-[220px]">
+              <SelectValue placeholder="مرتب‌سازی محصولات" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name-asc">نام (الف تا ی)</SelectItem>
+              <SelectItem value="name-desc">نام (ی تا الف)</SelectItem>
+              <SelectItem value="price-asc">قیمت (کم به زیاد)</SelectItem>
+              <SelectItem value="price-desc">قیمت (زیاد به کم)</SelectItem>
+              <SelectItem value="code-asc">کد (الف تا ی)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </CardContent>
     </Card>
