@@ -1,51 +1,73 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/auth";
-import { Role } from "@prisma/client";
 
-const protectedRoutes = ["/dashboard", "/admin"];
+const Role = {
+  ADMIN: "ADMIN",
+  USER: "USER",
+} as const;
+
+const protectedRoutes = ["/dashboard"];
 const adminRoutes = ["/admin"];
 
 export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
   try {
     const session = await auth();
-    const pathname = request.nextUrl.pathname;
+    const userRole = session?.user?.role;
 
-    // Safe check for admin role with proper null/undefined handling
-    const isAdmin = session?.user?.role === Role.ADMIN;
-
-    // If user is not authenticated and trying to access protected route, redirect to sign-in
-    if (!session?.user && protectedRoutes.includes(pathname)) {
-      return NextResponse.redirect(new URL("/sign-in", request.url));
+    // Redirect unauthenticated users from protected routes
+    if (!session?.user && isProtectedRoute(pathname)) {
+      return redirectToSignIn(request);
     }
 
-    // If user is authenticated and trying to access sign-in page, redirect to dashboard
-    if (session?.user && pathname.startsWith("/sign-in")) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    // Redirect authenticated users away from auth pages
+    if (session?.user && isAuthRoute(pathname)) {
+      return redirectToDashboard(request);
     }
 
-    // If user is not Admin and trying to access admin routes, redirect to dashboard
-    if (session?.user && !isAdmin && adminRoutes.includes(pathname)) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    // Block non-admins from admin routes
+    if (session?.user && isAdminRoute(pathname) && userRole !== Role.ADMIN) {
+      return redirectToDashboard(request);
     }
 
     return NextResponse.next();
   } catch (error) {
     console.error("Middleware error:", error);
-    // On auth error, redirect to sign-in for protected routes
-    if (
-      protectedRoutes.includes(request.nextUrl.pathname) ||
-      adminRoutes.includes(request.nextUrl.pathname)
-    ) {
-      return NextResponse.redirect(new URL("/sign-in", request.url));
+    if (isProtectedRoute(pathname)) {
+      return redirectToSignIn(request);
     }
     return NextResponse.next();
   }
 }
 
+// Helper functions
+function isProtectedRoute(pathname: string) {
+  return protectedRoutes.some((route) => pathname.startsWith(route));
+}
+
+function isAdminRoute(pathname: string) {
+  return adminRoutes.some((route) => pathname.startsWith(route));
+}
+
+function isAuthRoute(pathname: string) {
+  return pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up");
+}
+
+function redirectToSignIn(request: NextRequest) {
+  const url = request.nextUrl.clone();
+  url.pathname = "/sign-in";
+  url.searchParams.set("callbackUrl", request.nextUrl.pathname);
+  return NextResponse.redirect(url);
+}
+
+function redirectToDashboard(request: NextRequest) {
+  return NextResponse.redirect(new URL("/dashboard", request.url));
+}
+
 export const config = {
   matcher: [
-    // Skip all internal paths (_next)
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|auth|sign-in|sign-up).*)",
   ],
 };

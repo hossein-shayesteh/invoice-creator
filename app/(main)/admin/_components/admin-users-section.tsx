@@ -398,7 +398,6 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
               </TableBody>
             </Table>
           </div>
-          {/* ------------------ END: DESKTOP VIEW (TABLE) ------------------ */}
 
           {/* ------------------ START: MOBILE VIEW (LIST OF CARDS) ------------------ */}
           {/* This list is only visible on small screens (up to md) */}
@@ -422,6 +421,13 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>اقدامات</DropdownMenuLabel>
                         <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => openUserEditDialog(user)}
+                          className="flex cursor-pointer items-center gap-2"
+                        >
+                          <Pencil className="h-4 w-4" />
+                          <span>ویرایش</span>
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => fetchUserDetails(user.id)}
                           className="flex cursor-pointer items-center gap-2"

@@ -10,29 +10,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/sign-in",
     error: "/sign-in",
   },
-  debug: true,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      // Initial sign-in
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.username = user.username;
         token.idNumber = user.idNumber;
-      } else if (token.id) {
-        // Only fetch if token.id exists
-        try {
-          const dbUser = await db.user.findUnique({
-            where: { id: token.id as string },
-          });
-
-          if (dbUser) {
-            token.role = dbUser.role;
-            token.username = dbUser.username;
-            token.idNumber = dbUser.idNumber;
-          }
-        } catch (err) {
-          console.error("❌ Error loading user from DB in JWT callback:", err);
-        }
+      }
+      // Handle session updates
+      else if (trigger === "update" && session?.user) {
+        token = { ...token, ...session.user };
       }
 
       return token;
@@ -59,48 +48,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        if (
-          typeof credentials.username !== "string" ||
-          typeof credentials.password !== "string"
-        ) {
-          return null;
-        }
-
         try {
-          console.log("🔍 Looking for user:", credentials.username);
-
           const user = await db.user.findUnique({
-            where: { username: credentials.username.trim() },
+            where: { username: credentials.username.toString().trim() },
           });
 
-          if (!user) {
-            return null;
-          }
-
-          if (!user.password) {
-            return null;
-          }
+          if (!user || !user.password) return null;
 
           const passwordIsValid = await compare(
-            credentials.password,
+            credentials.password.toString(),
             user.password,
           );
 
-          if (!passwordIsValid) {
-            return null;
-          }
+          if (!passwordIsValid) return null;
 
-          const returnUser = {
+          return {
             id: user.id,
             name: user.name,
             idNumber: user.idNumber,
             username: user.username,
             role: user.role,
           };
-
-          return returnUser;
         } catch (error) {
-          console.error("💥 Authorize - Database Error:", error);
+          console.error("Authorization error:", error);
           return null;
         }
       },
