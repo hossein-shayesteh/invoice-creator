@@ -13,7 +13,7 @@ import db from "@/lib/prisma";
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await auth();
   if (!session?.user && session?.user.role !== Role.ADMIN)
-    return { error: "Unauthorized." };
+    return { error: "دسترسی غیرمجاز" };
 
   const {
     discountPercentage,
@@ -66,14 +66,14 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
   } catch (e) {
     const error = e as Error;
-    return { error: error.message || "Failed to create invoice" };
+    return { error: error.message || "خطا در ایجاد فاکتور" };
   }
 
   revalidatePath(`/admin`);
 
   return {
     data: invoice,
-    message: "Invoice created successfully.",
+    message: "فاکتور با موفقیت ایجاد شد",
   };
 };
 

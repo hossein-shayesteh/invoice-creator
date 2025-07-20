@@ -13,7 +13,7 @@ import db from "@/lib/prisma";
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await auth();
   if (!session?.user && session?.user.role !== Role.ADMIN)
-    return { error: "Unauthorized." };
+    return { error: "دسترسی غیرمجاز" };
 
   const { code, product_name, cc, price } = data;
 
@@ -26,7 +26,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     if (existingProduct) {
-      throw new Error(`Product with code "${code}" already exists`);
+      throw new Error(`مصحول با کد "${code}" از قبل موجود است`);
     }
 
     // Create new product
@@ -41,14 +41,14 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
   } catch (e) {
     const error = e as Error;
-    return { error: error.message || "Failed to create product" };
+    return { error: error.message || "خطا در ایجاد محصول" };
   }
 
   revalidatePath(`/admin`);
 
   return {
     data: product,
-    message: "Product created successfully.",
+    message: "محصول با موفقیت ایجاد شد",
   };
 };
 

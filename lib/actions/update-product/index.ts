@@ -13,7 +13,7 @@ import db from "@/lib/prisma";
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await auth();
   if (!session?.user && session?.user.role !== Role.ADMIN)
-    return { error: "Unauthorized." };
+    return { error: "دسترسی غیرمجاز" };
 
   const { id, code, product_name, cc, price, isAvailable } = data;
 
@@ -26,7 +26,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     if (!existingProduct) {
-      throw new Error("Product not found");
+      throw new Error("محصول یافت نشد");
     }
 
     // If code is being changed, check if the new code already exists
@@ -36,7 +36,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       });
 
       if (productWithCode)
-        throw new Error(`Product with code ${code} already exists`);
+        throw new Error(`مصحول با کد "${code}" از قبل موجود است`);
     }
 
     // Update product
@@ -52,7 +52,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
   } catch (e) {
     const error = e as Error;
-    return { error: error.message || "Failed to update product" };
+    return { error: error.message || "خطا در آپدیت محصول" };
   }
 
   revalidatePath(`/admin`);
@@ -60,7 +60,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   return {
     data: product,
-    message: "Product updated successfully.",
+    message: "محصول با موفقیت آپدیت شد",
   };
 };
 

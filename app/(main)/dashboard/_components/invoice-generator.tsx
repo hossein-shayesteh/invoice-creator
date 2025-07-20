@@ -7,7 +7,6 @@ import { format } from "date-fns";
 import { jsPDF } from "jspdf";
 import { Download, FileText, Printer } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { toast } from "sonner";
 
 import { useAction } from "@/hooks/use-action";
 
@@ -16,6 +15,7 @@ import { createInvoice } from "@/lib/actions/create-invoice";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { showToast } from "@/components/ui/custom-toast";
 import { Separator } from "@/components/ui/separator";
 
 export function InvoiceGenerator() {
@@ -37,11 +37,11 @@ export function InvoiceGenerator() {
 
   const { execute: executeCreateInvoice } = useAction(createInvoice, {
     onSuccess: async (_data, message) => {
-      toast.success(message);
+      if (message) showToast.success(message);
       clearCart();
     },
     onError: async (err) => {
-      toast.error(err);
+      showToast.error(err);
     },
     onComplete: async () => {
       setIsSaving(false);

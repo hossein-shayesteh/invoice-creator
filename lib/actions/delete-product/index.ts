@@ -13,7 +13,7 @@ import db from "@/lib/prisma";
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await auth();
   if (!session?.user && session?.user.role !== Role.ADMIN)
-    return { error: "Unauthorized: Admin access required" };
+    return { error: "دسترسی غیرمجاز" };
 
   const { id } = data;
 
@@ -24,7 +24,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     if (!existingProduct) {
-      throw new Error(`Product not found`);
+      throw new Error(`محصول یافت نشد`);
     }
 
     // Delete product
@@ -33,13 +33,13 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
   } catch (e) {
     const error = e as Error;
-    return { error: error.message || "Failed to delete product" };
+    return { error: error.message || "خطا در حذف محصول" };
   }
 
   revalidatePath(`/admin`);
 
   return {
-    message: "Product deleted successfully",
+    message: "مصحول با موفقیت حذف شد",
   };
 };
 

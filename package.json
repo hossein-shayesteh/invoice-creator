@@ -10,7 +10,8 @@
     "prettier": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json,css}\"",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force"
+    "db:reset": "prisma migrate reset --force && prisma db push",
+    "build:reset": "npm run db:reset && npm run build"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

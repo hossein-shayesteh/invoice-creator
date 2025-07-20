@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import { User } from "@prisma/client";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { FileText, MoreHorizontal, Pencil, Plus, Trash } from "lucide-react";
-import { toast } from "sonner";
 
 import { useAction } from "@/hooks/use-action";
 
@@ -19,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { showToast } from "@/components/ui/custom-toast";
 import {
   Dialog,
   DialogContent,
@@ -75,10 +75,10 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     onSuccess: async (_data, message) => {
       resetUserForm();
       setUserDialogOpen(false);
-      toast.success(message);
+      if (message) showToast.success(message);
     },
     onError: async (error) => {
-      toast.error(error);
+      showToast.error(error);
     },
   });
 
@@ -86,10 +86,10 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     onSuccess: async (_data, message) => {
       resetUserForm();
       setUserDialogOpen(false);
-      toast.success(message);
+      if (message) showToast.success(message);
     },
     onError: async (error) => {
-      toast.error(error);
+      showToast.error(error);
     },
   });
 
@@ -97,10 +97,10 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     onSuccess: async (_data, message) => {
       resetUserForm();
       setUserDialogOpen(false);
-      toast.success(message);
+      if (message) showToast.success(message);
     },
     onError: async (error) => {
-      toast.error(error);
+      showToast.error(error);
     },
   });
 
@@ -108,10 +108,10 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     onSuccess: async (_data, message) => {
       resetUserForm();
       setUserDetailsOpen(false);
-      toast.success(message);
+      if (message) showToast.success(message);
     },
     onError: async (error) => {
-      toast.error(error);
+      showToast.error(error);
       setUserDetailsOpen(false);
     },
   });

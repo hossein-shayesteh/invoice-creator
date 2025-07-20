@@ -14,7 +14,7 @@ import db from "@/lib/prisma";
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await auth();
   if (!session?.user && session?.user.role !== Role.ADMIN)
-    return { error: "Unauthorized." };
+    return { error: "دسترسی غیرمجاز" };
 
   const { id, username, password, name, isAdmin, idNumber } = data;
 
@@ -26,7 +26,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       where: { id },
     });
 
-    if (!existingUser) throw new Error("User not found");
+    if (!existingUser) throw new Error("حساب کاربری یافت نشد");
 
     // If username is being changed, check if the new username already exists
     if (username && username !== existingUser.username) {
@@ -35,7 +35,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       });
 
       if (userWithUsername)
-        throw new Error(`User with username "${username}" already exists`);
+        throw new Error(`کاربر با نام کاربری "${username}" از قبل وجود دارد`);
     }
 
     const updateData: {
@@ -71,14 +71,14 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
   } catch (e) {
     const error = e as Error;
-    return { error: error.message || "Failed to update user" };
+    return { error: error.message || "خطا در آپدیت حساب کاربری" };
   }
 
   revalidatePath(`/admin`);
 
   return {
     data: user,
-    message: "User updated successfully.",
+    message: "حساب کاربری با موفقیت آپدیت شد",
   };
 };
 

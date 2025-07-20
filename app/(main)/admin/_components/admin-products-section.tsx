@@ -2,9 +2,9 @@
 
 import React, { useMemo, useState } from "react";
 
+import { showToast } from "../../../../components/ui/custom-toast";
 import { Product } from "@prisma/client";
 import { MoreHorizontal, Pencil, Plus, Trash } from "lucide-react";
-import { toast } from "sonner";
 
 import { useAction } from "@/hooks/use-action";
 
@@ -67,35 +67,34 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
 
   const { execute: executeDeleteProduct } = useAction(deleteProduct, {
     onSuccess: async (_date, message) => {
-      toast.success(message);
+      if (message) showToast.success(message);
     },
     onError: async (error) => {
-      toast.error(error);
+      showToast.error(error);
     },
   });
 
   const { execute: executeCreateProduct } = useAction(createProduct, {
     onSuccess: async (_date, message) => {
-      toast.success(message);
+      if (message) showToast.success(message);
       resetProductForm();
       setProductDialogOpen(false);
     },
     onError: async (error) => {
-      toast.error(error);
+      showToast.error(error);
     },
   });
 
-  const { execute: executeUpdateProduct, isLoading: updateProductIsLoading } =
-    useAction(updateProduct, {
-      onSuccess: async (_date, message) => {
-        toast.success(message);
-        resetProductForm();
-        setProductDialogOpen(false);
-      },
-      onError: async (error) => {
-        toast.error(error);
-      },
-    });
+  const { execute: executeUpdateProduct } = useAction(updateProduct, {
+    onSuccess: async (_date, message) => {
+      if (message) showToast.success(message);
+      resetProductForm();
+      setProductDialogOpen(false);
+    },
+    onError: async (error) => {
+      showToast.error(error);
+    },
+  });
 
   // Reset product form
   const resetProductForm = () => {

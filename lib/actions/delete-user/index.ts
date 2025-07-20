@@ -13,13 +13,13 @@ import db from "@/lib/prisma";
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await auth();
   if (!session?.user && session?.user.role !== Role.ADMIN)
-    return { error: "Unauthorized: Admin access required" };
+    return { error: "دسترسی غیر مجاز" };
 
   const { id } = data;
 
   // Prevent deleting yourself
   if (session.user.id === id)
-    return { error: "You cannot delete your own account" };
+    return { error: "شما نمی‌توانید حساب کاربری خود را حذف کنید" };
 
   try {
     // Check if username already exists
@@ -28,8 +28,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
 
     if (!existingUser) {
-      throw new Error(`User not found`);
+      throw new Error("حساب کاربری یافت نشد");
     }
+    if (existingUser.username === process.env.ADMIN_USERNAME)
+      throw new Error(`شما نمی‌توانید این حساب کاربری را حذف کنید`);
 
     // Delete user
     await db.user.delete({
@@ -37,13 +39,13 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     });
   } catch (e) {
     const error = e as Error;
-    return { error: error.message || "Failed to delete user" };
+    return { error: error.message || "خطا در حذف حساب کاربری" };
   }
 
   revalidatePath(`/admin`);
 
   return {
-    message: "User deleted successfully",
+    message: "حساب کاربری با موفقیت حذف شد",
   };
 };
 
