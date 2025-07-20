@@ -148,7 +148,7 @@ export function ShoppingCart() {
             <span>{getCartShipping().toLocaleString("fa-IR")} تومان</span>
           </div>
           <div className="flex justify-between text-sm text-blue-600">
-            <span>مجموع امتیازات CC:</span>
+            <span>مجموع CC:</span>
             <span>{getTotalCC().toLocaleString("fa-IR")}</span>
           </div>
           {state.pricingSettings.discountPercentage > 0 && (

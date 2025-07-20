@@ -96,7 +96,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           </div>
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>امتیازات CC:</span>
+            <span>CC:</span>
             <span className="font-medium">
               {product.cc.toLocaleString("fa-IR")}
             </span>

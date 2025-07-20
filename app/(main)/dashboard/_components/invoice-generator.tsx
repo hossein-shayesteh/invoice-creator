@@ -92,7 +92,7 @@ export function InvoiceGenerator() {
       // 2. Generate the list of products
       const productLines = items
         .map((item) => {
-          const namePart = `${item.quantity} ${item.product_name} ${item.offerQuantity ? `(Offer = ${item.offerQuantity})` : null}`;
+          const namePart = `${item.quantity} ${item.product_name} ${item.offerQuantity && item.quantity > 0 ? `(Offer = ${item.offerQuantity})` : ""}`;
           return `${namePart.padEnd(45)} ${item.code}`;
         })
         .join("\n");
@@ -568,7 +568,7 @@ ${getCartTotal().toLocaleString()} T
                       تعداد
                     </th>
                     <th className="border p-2 font-semibold">قیمت واحد</th>
-                    <th className="border p-2 font-semibold">امتیازات CC</th>
+                    <th className="border p-2 font-semibold">CC</th>
                     <th className="border p-2 text-center font-semibold">
                       پیشنهاد
                     </th>
@@ -657,7 +657,7 @@ ${getCartTotal().toLocaleString()} T
               <span>{getCartShipping().toLocaleString("fa-IR")} تومان</span>
             </div>
             <div className="flex justify-between text-blue-600">
-              <span>مجموع امتیازات CC:</span>
+              <span>مجموع CC:</span>
               <span>{getTotalCC().toLocaleString("fa-IR")}</span>
             </div>
             {pricingSettings.discountPercentage > 0 && (
@@ -668,13 +668,12 @@ ${getCartTotal().toLocaleString()} T
                   %):
                 </span>
                 <span>
-                  -
                   {Math.floor(
                     ((getCartSubtotal() + getCartShipping()) *
                       pricingSettings.discountPercentage) /
                       100,
-                  ).toLocaleString("fa-IR")}{" "}
-                  تومان
+                  ).toLocaleString("fa-IR")}
+                  - تومان
                 </span>
               </div>
             )}

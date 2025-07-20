@@ -234,7 +234,7 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="cc">امتیازات CC</Label>
+                  <Label htmlFor="cc">CC</Label>
                   <Input
                     id="cc"
                     name="cc"
@@ -295,7 +295,7 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
               <TableRow>
                 <TableHead className="text-right">کد</TableHead>
                 <TableHead className="text-right">نام محصول</TableHead>
-                <TableHead className="text-right">امتیاز CC</TableHead>
+                <TableHead className="text-right"> CC</TableHead>
                 <TableHead className="text-right">قیمت (درهم)</TableHead>
                 <TableHead className="text-center">اقدامات</TableHead>
               </TableRow>

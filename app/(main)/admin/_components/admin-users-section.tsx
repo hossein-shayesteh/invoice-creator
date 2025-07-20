@@ -356,14 +356,13 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
       <Dialog open={userDetailsOpen} onOpenChange={setUserDetailsOpen}>
         <DialogContent className={"text-right sm:max-w-4xl"} dir="rtl">
           <DialogHeader>
-            <DialogTitle>جزئیات کاربر</DialogTitle>
+            <DialogTitle>اطلاعات کاربر</DialogTitle>
           </DialogHeader>
 
           {selectedUser && (
             <div className="w-full space-y-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <h3 className="mb-2 font-semibold">اطلاعات کاربر</h3>
                   <p>
                     <strong>نام:</strong> {selectedUser.name}
                   </p>
@@ -404,9 +403,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                             شماره فاکتور
                           </TableHead>
                           <TableHead className="text-right">مبلغ کل</TableHead>
-                          <TableHead className="text-right">
-                            امتیاز CC
-                          </TableHead>
+                          <TableHead className="text-right">CC</TableHead>
                           <TableHead className="text-right">
                             تاریخ ایجاد
                           </TableHead>
