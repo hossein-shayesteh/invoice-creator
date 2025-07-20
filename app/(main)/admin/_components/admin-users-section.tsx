@@ -12,6 +12,7 @@ import { useAction } from "@/hooks/use-action";
 import { createUser } from "@/lib/actions/create-user";
 import { deleteInvoice } from "@/lib/actions/delete-invoice";
 import { deleteUser } from "@/lib/actions/delete-user";
+import { updateUser } from "@/lib/actions/update-user";
 import { getUserById } from "@/lib/user-services";
 
 import { Badge } from "@/components/ui/badge";
@@ -81,6 +82,17 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     },
   });
 
+  const { execute: executeUpdateUser } = useAction(updateUser, {
+    onSuccess: async (_data, message) => {
+      resetUserForm();
+      setUserDialogOpen(false);
+      toast.success(message);
+    },
+    onError: async (error) => {
+      toast.error(error);
+    },
+  });
+
   const { execute: executeDeleteUser } = useAction(deleteUser, {
     onSuccess: async (_data, message) => {
       resetUserForm();
@@ -139,8 +151,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
   const handleSubmitUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingUser) {
-      // TODO:Add Edit user functions
-      console.log(editingUser);
+      await executeUpdateUser({ id: editingUser.id, ...userFormData });
     } else {
       await executeCreateUser({ ...userFormData });
     }
@@ -267,7 +278,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                     type="password"
                     value={userFormData.password}
                     onChange={handleUserInputChange}
-                    required
+                    required={!editingUser}
                     className="text-right"
                   />
                 </div>
