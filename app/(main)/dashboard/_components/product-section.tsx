@@ -21,6 +21,7 @@ const ProductSection = ({ products }: ProductProps) => {
   // Filter and sort products
   const filteredProducts = useMemo(() => {
     const filtered = products.filter((product) => {
+      if (!product.isAvailable) return;
       // Search filter
       return (
         product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||

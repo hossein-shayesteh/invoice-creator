@@ -15,7 +15,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   if (!session?.user && session?.user.role !== Role.ADMIN)
     return { error: "Unauthorized." };
 
-  const { id, code, product_name, cc, price } = data;
+  const { id, code, product_name, cc, price, isAvailable } = data;
 
   let product;
 
@@ -30,7 +30,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     }
 
     // If code is being changed, check if the new code already exists
-    if (code !== existingProduct.code) {
+    if (code && code !== existingProduct.code) {
       const productWithCode = await db.product.findUnique({
         where: { code },
       });
@@ -45,8 +45,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       data: {
         code,
         product_name,
-        cc: parseFloat(cc),
-        price: parseFloat(price),
+        isAvailable,
+        cc: cc ? parseFloat(cc) : undefined,
+        price: price ? parseFloat(price) : undefined,
       },
     });
   } catch (e) {

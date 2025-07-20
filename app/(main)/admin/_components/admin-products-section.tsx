@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -51,8 +52,12 @@ interface AdminProductSectionProps {
 const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [updatingProductId, setUpdatingProductId] = useState<string | null>(
+    null,
+  );
   const [productFormData, setProductFormData] = useState({
     code: "",
+    isAvailable: false,
     product_name: "",
     cc: "0",
     price: "0",
@@ -80,16 +85,17 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
     },
   });
 
-  const { execute: executeUpdateProduct } = useAction(updateProduct, {
-    onSuccess: async (_date, message) => {
-      toast.success(message);
-      resetProductForm();
-      setProductDialogOpen(false);
-    },
-    onError: async (error) => {
-      toast.error(error);
-    },
-  });
+  const { execute: executeUpdateProduct, isLoading: updateProductIsLoading } =
+    useAction(updateProduct, {
+      onSuccess: async (_date, message) => {
+        toast.success(message);
+        resetProductForm();
+        setProductDialogOpen(false);
+      },
+      onError: async (error) => {
+        toast.error(error);
+      },
+    });
 
   // Reset product form
   const resetProductForm = () => {
@@ -97,6 +103,7 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
       code: "",
       product_name: "",
       cc: "0",
+      isAvailable: false,
       price: "0",
     });
     setEditingProduct(null);
@@ -115,6 +122,7 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
       code: product.code,
       product_name: product.product_name,
       cc: product.cc.toString(),
+      isAvailable: product.isAvailable,
       price: product.price.toString(),
     });
     setProductDialogOpen(true);
@@ -298,6 +306,7 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="text-right">موجودی</TableHead>
                   <TableHead className="text-right">کد</TableHead>
                   <TableHead className="text-right">نام محصول</TableHead>
                   <TableHead className="text-right">CC</TableHead>
@@ -315,6 +324,23 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
                 ) : (
                   filteredProducts.map((product) => (
                     <TableRow key={product.id}>
+                      <TableCell className="font-mono">
+                        <Switch
+                          checked={product.isAvailable}
+                          disabled={updatingProductId === product.id}
+                          onClick={async () => {
+                            setUpdatingProductId(product.id);
+                            try {
+                              await executeUpdateProduct({
+                                id: product.id,
+                                isAvailable: !product.isAvailable,
+                              });
+                            } finally {
+                              setUpdatingProductId(null);
+                            }
+                          }}
+                        />
+                      </TableCell>
                       <TableCell className="font-mono">
                         {product.code}
                       </TableCell>
