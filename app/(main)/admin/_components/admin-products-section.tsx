@@ -179,7 +179,10 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
 
   return (
     <>
-      <div className="flex justify-between" dir="rtl">
+      <div
+        className="my-4 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-between"
+        dir="rtl"
+      >
         <h2 className="text-xl font-semibold">مدیریت محصولات</h2>
         <Dialog open={productDialogOpen} onOpenChange={setProductDialogOpen}>
           <DialogTrigger asChild>
@@ -289,73 +292,140 @@ const AdminProductsSection = ({ products }: AdminProductSectionProps) => {
       />
 
       <Card dir="rtl" className="text-right">
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">کد</TableHead>
-                <TableHead className="text-right">نام محصول</TableHead>
-                <TableHead className="text-right"> CC</TableHead>
-                <TableHead className="text-right">قیمت (درهم)</TableHead>
-                <TableHead className="text-center">اقدامات</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredProducts.length === 0 ? (
+        <CardContent className="p-0">
+          {/* DESKTOP VIEW: TABLE */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
-                    محصولی یافت نشد.
-                  </TableCell>
+                  <TableHead className="text-right">کد</TableHead>
+                  <TableHead className="text-right">نام محصول</TableHead>
+                  <TableHead className="text-right">CC</TableHead>
+                  <TableHead className="text-right">قیمت (درهم)</TableHead>
+                  <TableHead className="text-center">اقدامات</TableHead>
                 </TableRow>
-              ) : (
-                filteredProducts.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="font-mono">{product.code}</TableCell>
-                    <TableCell className="font-medium">
-                      {product.product_name}
+              </TableHeader>
+              <TableBody>
+                {filteredProducts.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      محصولی یافت نشد.
                     </TableCell>
-                    <TableCell className="text-right">
+                  </TableRow>
+                ) : (
+                  filteredProducts.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell className="font-mono">
+                        {product.code}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {product.product_name}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {product.cc.toLocaleString("fa-IR", {
+                          minimumFractionDigits: 3,
+                        })}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {product.price.toLocaleString("fa-IR", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {/* --- Dropdown for Desktop View --- */}
+                        <DropdownMenu dir="rtl">
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>اقدامات</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => openProductEditDialog(product)}
+                              className="flex cursor-pointer items-center gap-2"
+                            >
+                              <Pencil className="h-4 w-4" />
+                              <span>ویرایش</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDeleteProduct(product.id)}
+                              className="flex cursor-pointer items-center gap-2 text-red-600"
+                            >
+                              <Trash className="h-4 w-4" />
+                              <span>حذف</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* MOBILE VIEW: LIST OF CARDS */}
+          <div className="block space-y-4 p-4 md:hidden">
+            {filteredProducts.length === 0 ? (
+              <div className="text-muted-foreground py-12 text-center">
+                محصولی یافت نشد.
+              </div>
+            ) : (
+              filteredProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex items-center justify-between rounded-lg border p-4"
+                >
+                  <div className="flex flex-col gap-1">
+                    <p className="font-semibold">{product.product_name}</p>
+                    <p className="text-muted-foreground font-mono text-sm">
+                      {product.code}
+                    </p>
+                    <p className="text-sm">
+                      قیمت:{" "}
+                      {product.price.toLocaleString("fa-IR", {
+                        minimumFractionDigits: 2,
+                      })}{" "}
+                      | CC:{" "}
                       {product.cc.toLocaleString("fa-IR", {
                         minimumFractionDigits: 3,
                       })}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {product.price.toLocaleString("fa-IR", {
-                        minimumFractionDigits: 2,
-                      })}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <DropdownMenu dir="rtl">
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>اقدامات</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => openProductEditDialog(product)}
-                            className="flex cursor-pointer items-center gap-2"
-                          >
-                            <Pencil className="h-4 w-4" />
-                            <span>ویرایش</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteProduct(product.id)}
-                            className="flex cursor-pointer items-center gap-2 text-red-600"
-                          >
-                            <Trash className="h-4 w-4" />
-                            <span>حذف</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                    </p>
+                  </div>
+                  <div className="shrink-0">
+                    {/* --- Dropdown for Mobile View --- */}
+                    <DropdownMenu dir="rtl">
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>اقدامات</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => openProductEditDialog(product)}
+                          className="flex cursor-pointer items-center gap-2"
+                        >
+                          <Pencil className="h-4 w-4" />
+                          <span>ویرایش</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteProduct(product.id)}
+                          className="flex cursor-pointer items-center gap-2 text-red-600"
+                        >
+                          <Trash className="h-4 w-4" />
+                          <span>حذف</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </CardContent>
       </Card>
     </>

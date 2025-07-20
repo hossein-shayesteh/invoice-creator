@@ -171,7 +171,10 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
 
   return (
     <>
-      <div className="flex justify-between">
+      <div
+        className="my-4 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:justify-between"
+        dir="rtl"
+      >
         <h2 className="text-xl font-semibold">مدیریت کاربران</h2>
         <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}>
           <DialogTrigger asChild>
@@ -187,7 +190,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
             </Button>
           </DialogTrigger>
           {/* 1. Set direction and alignment for the Dialog */}
-          <DialogContent className="text-right" dir="rtl">
+          <DialogContent className="text-right">
             <DialogHeader>
               <DialogTitle>افزودن کاربر جدید</DialogTitle>
               <DialogDescription>
@@ -277,34 +280,136 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
         </Dialog>
       </div>
 
-      <Card dir="rtl" className="text-right">
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">نام</TableHead>
-                <TableHead className="text-right">نام کاربری</TableHead>
-                <TableHead className="text-right">شماره شناسایی</TableHead>
-                <TableHead className="text-right">نقش</TableHead>
-                <TableHead className="text-center">فاکتورها</TableHead>
-                <TableHead className="text-right">تاریخ ایجاد</TableHead>
-                <TableHead className="text-center">اقدامات</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.length === 0 ? (
+      <Card dir="rtl" className="w-full text-right">
+        <CardContent className="p-0">
+          {/* ------------------ START: DESKTOP VIEW (TABLE) ------------------ */}
+          {/* This table is only visible on medium screens and larger (md and up) */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
-                    کاربری یافت نشد.
-                  </TableCell>
+                  <TableHead className="text-right">نام</TableHead>
+                  <TableHead className="text-right">نام کاربری</TableHead>
+                  <TableHead className="text-right">شماره شناسایی</TableHead>
+                  <TableHead className="text-right">نقش</TableHead>
+                  <TableHead className="text-center">فاکتورها</TableHead>
+                  <TableHead className="text-right">تاریخ ایجاد</TableHead>
+                  <TableHead className="text-center">اقدامات</TableHead>
                 </TableRow>
-              ) : (
-                users.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell className="font-mono">{user.idNumber}</TableCell>
-                    <TableCell>
+              </TableHeader>
+              <TableBody>
+                {users.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-24 text-center">
+                      کاربری یافت نشد.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  users.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">{user.name}</TableCell>
+                      <TableCell>{user.username}</TableCell>
+                      <TableCell className="font-mono">
+                        {user.idNumber}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            user.role === "ADMIN" ? "default" : "secondary"
+                          }
+                        >
+                          {user.role === "ADMIN" ? "ادمین" : "کاربر"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {(userInvoices.length || 0).toLocaleString("fa-IR")}
+                      </TableCell>
+                      <TableCell>{formatDate(user.createdAt)}</TableCell>
+                      <TableCell className="text-center">
+                        <DropdownMenu dir="rtl">
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>اقدامات</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => fetchUserDetails(user.id)}
+                              className="flex cursor-pointer items-center gap-2"
+                            >
+                              <FileText className="h-4 w-4" />
+                              <span>مشاهده جزئیات</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDeleteUser(user.id)}
+                              className="flex cursor-pointer items-center gap-2 text-red-600"
+                            >
+                              <Trash className="h-4 w-4" />
+                              <span>حذف</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          {/* ------------------ END: DESKTOP VIEW (TABLE) ------------------ */}
+
+          {/* ------------------ START: MOBILE VIEW (LIST OF CARDS) ------------------ */}
+          {/* This list is only visible on small screens (up to md) */}
+          <div className="block border-t md:hidden">
+            {users.length === 0 ? (
+              <p className="text-muted-foreground p-8 text-center">
+                کاربری یافت نشد.
+              </p>
+            ) : (
+              users.map((user) => (
+                <div key={user.id} className="border-b">
+                  {/* Card Header: Name and Actions */}
+                  <div className="flex items-center justify-between p-4">
+                    <span className="font-semibold">{user.name}</span>
+                    <DropdownMenu dir="rtl">
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>اقدامات</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => fetchUserDetails(user.id)}
+                          className="flex cursor-pointer items-center gap-2"
+                        >
+                          <FileText className="h-4 w-4" />
+                          <span>مشاهده جزئیات</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="flex cursor-pointer items-center gap-2 text-red-600"
+                        >
+                          <Trash className="h-4 w-4" />
+                          <span>حذف</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  {/* Card Body: Details in a grid */}
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 px-4 pb-4 text-sm">
+                    <div className="text-muted-foreground">نام کاربری</div>
+                    <div>{user.username}</div>
+
+                    <div className="text-muted-foreground">شماره شناسایی</div>
+                    <div className="font-mono">{user.idNumber}</div>
+
+                    <div className="text-muted-foreground">نقش</div>
+                    <div>
                       <Badge
                         variant={
                           user.role === "ADMIN" ? "default" : "secondary"
@@ -312,43 +417,22 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                       >
                         {user.role === "ADMIN" ? "ادمین" : "کاربر"}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
+                    </div>
+
+                    <div className="text-muted-foreground">فاکتورها</div>
+                    <div>
                       {(userInvoices.length || 0).toLocaleString("fa-IR")}
-                    </TableCell>
-                    <TableCell>{formatDate(user.createdAt)}</TableCell>
-                    <TableCell className="text-center">
-                      <DropdownMenu dir="rtl">
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>اقدامات</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => fetchUserDetails(user.id)}
-                            className="flex cursor-pointer items-center gap-2"
-                          >
-                            <FileText className="h-4 w-4" />
-                            <span>مشاهده جزئیات</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteUser(user.id)}
-                            className="flex cursor-pointer items-center gap-2 text-red-600"
-                          >
-                            <Trash className="h-4 w-4" />
-                            <span>حذف</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                    </div>
+                  </div>
+
+                  {/* Card Footer: Creation Date */}
+                  <div className="bg-muted/50 text-muted-foreground px-4 py-2 text-xs">
+                    عضویت در: {formatDate(user.createdAt)}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </CardContent>
       </Card>
 
