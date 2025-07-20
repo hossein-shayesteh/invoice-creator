@@ -67,8 +67,6 @@ export function InvoiceGenerator() {
     );
   }
 
-  console.log(session);
-
   const generateInvoiceNumber = () => {
     const date = new Date();
     const formatted = format(date, "yyyy/MM/dd - HH:mm");
@@ -357,15 +355,6 @@ ${getCartTotal().toLocaleString()} T
         }
       });
 
-      // Add quantity details for offers (green text)
-      if (item.offerEnabled && item.offerQuantity) {
-        doc.setTextColor(4, 120, 87); // Green color
-        doc.setFontSize(6);
-        doc.text(`(+${item.offerQuantity} free)`, columnX[2], currentY + 8);
-        doc.setFontSize(7);
-        doc.setTextColor(...textColor);
-      }
-
       currentY += 10;
     });
 
@@ -519,8 +508,9 @@ ${getCartTotal().toLocaleString()} T
             )}
           </div>
 
-          {/* Invoice Details */}
-          <div className="grid grid-cols-2 gap-4 text-right">
+          {/* --- RESPONSIVE INVOICE DETAILS --- */}
+          {/* Stacks to 1 column on mobile, 2 columns on medium screens and up */}
+          <div className="grid grid-cols-1 gap-6 text-right md:grid-cols-2 md:gap-4">
             <div>
               <h3 className="mb-2 font-semibold">خلاصه سفارش</h3>
               <p className="text-sm">
@@ -555,10 +545,59 @@ ${getCartTotal().toLocaleString()} T
             </div>
           </div>
 
-          {/* Items Table */}
+          {/* --- RESPONSIVE ITEMS SECTION --- */}
           <div>
             <h3 className="mb-3 font-semibold">اقلام سفارش</h3>
-            <div className="overflow-x-auto">
+
+            {/* MOBILE VIEW: List of cards */}
+            <div className="space-y-3 md:hidden">
+              {items.map((item) => {
+                // Logic is untouched, as requested
+                const regularProductCost = Math.floor(
+                  item.quantity *
+                    item.price *
+                    (pricingSettings.exchangeRate *
+                      1.05 *
+                      (1 - pricingSettings.discountPercentage / 100) +
+                      2100),
+                );
+                let offerShippingCost = 0;
+                if (item.offerEnabled && item.offerQuantity) {
+                  offerShippingCost = Math.floor(
+                    item.offerQuantity * item.price * 2100,
+                  );
+                }
+                const finalTotal = regularProductCost + offerShippingCost;
+
+                return (
+                  <div
+                    key={item.code}
+                    className="rounded-lg border bg-gray-50 p-3 text-sm"
+                  >
+                    <div className="flex justify-between font-bold">
+                      <span>{item.product_name}</span>
+                      <span>{finalTotal.toLocaleString("fa-IR")} ت</span>
+                    </div>
+                    <div className="mt-2 flex justify-between text-gray-600">
+                      <span>کد: {item.code}</span>
+                      <span>
+                        تعداد: {item.quantity.toLocaleString("fa-IR")}
+                      </span>
+                    </div>
+                    {item.offerEnabled && item.offerQuantity && (
+                      <div className="mt-2">
+                        <Badge variant="destructive" className="text-xs">
+                          +{item.offerQuantity.toLocaleString("fa-IR")} رایگان
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* DESKTOP VIEW: Table */}
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full border border-gray-200 text-right">
                 <thead className="bg-gray-50">
                   <tr>
@@ -577,7 +616,6 @@ ${getCartTotal().toLocaleString()} T
                 </thead>
                 <tbody>
                   {items.map((item) => {
-                    // New formula for regular products
                     const regularProductCost = Math.floor(
                       item.quantity *
                         item.price *
@@ -586,7 +624,6 @@ ${getCartTotal().toLocaleString()} T
                           (1 - pricingSettings.discountPercentage / 100) +
                           2100),
                     );
-
                     let offerShippingCost = 0;
                     if (item.offerEnabled && item.offerQuantity) {
                       offerShippingCost = Math.floor(
@@ -594,7 +631,6 @@ ${getCartTotal().toLocaleString()} T
                       );
                     }
                     const finalTotal = regularProductCost + offerShippingCost;
-
                     return (
                       <tr key={item.code} className="even:bg-gray-50">
                         <td className="border p-2 font-mono text-sm">
@@ -642,7 +678,7 @@ ${getCartTotal().toLocaleString()} T
           </div>
 
           {/* Totals */}
-          <div className="space-y-2 pt-4">
+          <div className="space-y-2 pt-4 text-sm md:text-base">
             <Separator />
             <div className="flex justify-between">
               <span>هزینه محصولات (درهم):</span>
@@ -653,7 +689,7 @@ ${getCartTotal().toLocaleString()} T
               <span>{getCartSubtotal().toLocaleString("fa-IR")} تومان</span>
             </div>
             <div className="flex justify-between">
-              <span>ارسال محصولات پیشنهاد ویژه:</span>
+              <span>هزینه ارسال:</span>
               <span>{getCartShipping().toLocaleString("fa-IR")} تومان</span>
             </div>
             <div className="flex justify-between text-blue-600">
@@ -685,23 +721,10 @@ ${getCartTotal().toLocaleString()} T
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="mt-6 flex flex-row-reverse gap-2 border-t pt-4">
-          <Button onClick={handlePrint} variant="outline" className="flex-1">
-            <Printer className="me-2 h-4 w-4" />
-            خروجی متنی
-          </Button>
-          <Button
-            onClick={handleDownloadPDF}
-            variant="outline"
-            className="flex-1"
-          >
-            <Download className="me-2 h-4 w-4" />
-            دانلود PDF
-          </Button>
+        <div className="mt-6 flex flex-col-reverse gap-3 border-t pt-4 sm:flex-row sm:gap-2">
           <Button
             onClick={handleGenerateInvoice}
-            className="flex-1"
+            className="w-full sm:flex-1"
             disabled={isSaving}
           >
             {isSaving ? (
@@ -715,6 +738,22 @@ ${getCartTotal().toLocaleString()} T
                 ایجاد فاکتور
               </>
             )}
+          </Button>
+          <Button
+            onClick={handleDownloadPDF}
+            variant="outline"
+            className="w-full sm:flex-1"
+          >
+            <Download className="me-2 h-4 w-4" />
+            دانلود PDF
+          </Button>
+          <Button
+            onClick={handlePrint}
+            variant="outline"
+            className="w-full sm:flex-1"
+          >
+            <Printer className="me-2 h-4 w-4" />
+            خروجی متنی
           </Button>
         </div>
       </CardContent>

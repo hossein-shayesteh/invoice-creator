@@ -38,29 +38,29 @@ const DashboardPage = async () => {
               className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
             >
               {/* Removed the LTR-specific `sm:mr-0` class from the icon */}
-              <span className="hidden sm:inline">محصولات</span>
-              <Package className="h-4 w-4" />
+              <span className="">محصولات</span>
+              <Package className="hidden h-4 w-4 sm:inline" />
             </TabsTrigger>
             <TabsTrigger
               value="cart"
               className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
             >
-              <span className="hidden sm:inline">سبد خرید</span>
-              <CartIcon className="h-4 w-4" />
+              <span>سبد خرید</span>
+              <CartIcon className="hidden h-4 w-4 sm:inline" />
             </TabsTrigger>
             <TabsTrigger
               value="settings"
               className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
             >
-              <span className="hidden sm:inline">تنظیمات</span>
-              <Settings className="h-4 w-4" />
+              <span>تنظیمات</span>
+              <Settings className="hidden h-4 w-4 sm:inline" />
             </TabsTrigger>
             <TabsTrigger
               value="invoice"
               className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
             >
-              <span className="hidden sm:inline">فاکتور</span>
-              <FileText className="h-4 w-4" />
+              <span>فاکتور</span>
+              <FileText className="hidden h-4 w-4 sm:inline" />
             </TabsTrigger>
           </TabsList>
 
