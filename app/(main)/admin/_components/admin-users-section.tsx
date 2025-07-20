@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 import { User } from "@prisma/client";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { FileText, MoreHorizontal, Plus, Trash } from "lucide-react";
+import { FileText, MoreHorizontal, Pencil, Plus, Trash } from "lucide-react";
 import { toast } from "sonner";
 
 import { useAction } from "@/hooks/use-action";
@@ -57,6 +57,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     null,
   );
   const [userDetailsOpen, setUserDetailsOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const [userInvoices, setUserInvoices] = useState<GetUserByIdInvoiceResult[]>(
     [],
   );
@@ -103,6 +104,18 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     },
   });
 
+  // Reset product form
+  const resetUserForm = () => {
+    setUserFormData({
+      name: "",
+      username: "",
+      password: "",
+      idNumber: "",
+      isAdmin: false,
+    });
+    setEditingUser(null);
+  };
+
   // Handle user form input change
   const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -114,17 +127,6 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     setUserFormData((prev) => ({ ...prev, isAdmin: checked }));
   };
 
-  // Reset user form
-  const resetUserForm = () => {
-    setUserFormData({
-      name: "",
-      username: "",
-      password: "",
-      idNumber: "",
-      isAdmin: false,
-    });
-  };
-
   // Fetch user details
   const fetchUserDetails = async (userId: string) => {
     const user = await getUserById(userId);
@@ -134,8 +136,14 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
   };
 
   // Handle user form submission
-  const handleCreateUser = async () => {
-    await executeCreateUser({ ...userFormData });
+  const handleSubmitUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingUser) {
+      // TODO:Add Edit user functions
+      console.log(editingUser);
+    } else {
+      await executeCreateUser({ ...userFormData });
+    }
   };
 
   // Delete user
@@ -155,6 +163,21 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
     if (!confirm("Are you sure you want to delete this invoice?")) return;
 
     await executeDeleteInvoice({ id: invoiceId });
+
+    setUserDetailsOpen(false);
+  };
+
+  // Open product dialog for editing
+  const openUserEditDialog = (user: User) => {
+    setEditingUser(user);
+    setUserFormData({
+      name: user.name || "",
+      username: user.username || "",
+      password: "",
+      idNumber: user.idNumber || "",
+      isAdmin: user.role === "ADMIN",
+    });
+    setUserDialogOpen(true);
   };
 
   // Format date
@@ -198,7 +221,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
               </DialogDescription>
             </DialogHeader>
 
-            <form action={handleCreateUser} className="space-y-4">
+            <form onSubmit={handleSubmitUser} className="space-y-4">
               <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">نام کامل *</Label>
@@ -273,7 +296,9 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                 >
                   انصراف
                 </Button>
-                <Button type="submit">ایجاد</Button>
+                <Button type="submit">
+                  {editingUser ? "به‌روزرسانی" : "ایجاد"}
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -292,7 +317,6 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                   <TableHead className="text-right">نام کاربری</TableHead>
                   <TableHead className="text-right">شماره شناسایی</TableHead>
                   <TableHead className="text-right">نقش</TableHead>
-                  <TableHead className="text-center">فاکتورها</TableHead>
                   <TableHead className="text-right">تاریخ ایجاد</TableHead>
                   <TableHead className="text-center">اقدامات</TableHead>
                 </TableRow>
@@ -321,9 +345,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                           {user.role === "ADMIN" ? "ادمین" : "کاربر"}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-center">
-                        {(userInvoices.length || 0).toLocaleString("fa-IR")}
-                      </TableCell>
+
                       <TableCell>{formatDate(user.createdAt)}</TableCell>
                       <TableCell className="text-center">
                         <DropdownMenu dir="rtl">
@@ -335,6 +357,13 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>اقدامات</DropdownMenuLabel>
                             <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => openUserEditDialog(user)}
+                              className="flex cursor-pointer items-center gap-2"
+                            >
+                              <Pencil className="h-4 w-4" />
+                              <span>ویرایش</span>
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => fetchUserDetails(user.id)}
                               className="flex cursor-pointer items-center gap-2"
