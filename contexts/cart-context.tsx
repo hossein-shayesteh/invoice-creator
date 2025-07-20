@@ -12,7 +12,7 @@ import { Product } from "@prisma/client";
 
 import { CartItem, PricingSettings } from "@/types";
 
-interface CartState {
+export interface CartState {
   items: CartItem[];
   pricingSettings: PricingSettings;
 }

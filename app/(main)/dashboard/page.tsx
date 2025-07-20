@@ -31,30 +31,8 @@ const DashboardPage = async () => {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="products" className="space-y-6">
+        <Tabs defaultValue="products" className="space-y-6" dir="rtl">
           <TabsList className="flex w-full flex-wrap">
-            {/* The `gap-2` utility correctly handles spacing in both LTR and RTL. */}
-            <TabsTrigger
-              value="invoice"
-              className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
-            >
-              <span className="sm:inline">فاکتور</span>
-              <FileText className="h-4 w-4" />
-            </TabsTrigger>
-            <TabsTrigger
-              value="settings"
-              className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
-            >
-              <span className="sm:inline">تنظیمات</span>
-              <Settings className="h-4 w-4" />
-            </TabsTrigger>
-            <TabsTrigger
-              value="cart"
-              className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
-            >
-              <span className="sm:inline">سبد خرید</span>
-              <CartIcon className="h-4 w-4" />
-            </TabsTrigger>
             <TabsTrigger
               value="products"
               className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
@@ -62,6 +40,27 @@ const DashboardPage = async () => {
               {/* Removed the LTR-specific `sm:mr-0` class from the icon */}
               <span className="hidden sm:inline">محصولات</span>
               <Package className="h-4 w-4" />
+            </TabsTrigger>
+            <TabsTrigger
+              value="cart"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
+            >
+              <span className="hidden sm:inline">سبد خرید</span>
+              <CartIcon className="h-4 w-4" />
+            </TabsTrigger>
+            <TabsTrigger
+              value="settings"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
+            >
+              <span className="hidden sm:inline">تنظیمات</span>
+              <Settings className="h-4 w-4" />
+            </TabsTrigger>
+            <TabsTrigger
+              value="invoice"
+              className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
+            >
+              <span className="hidden sm:inline">فاکتور</span>
+              <FileText className="h-4 w-4" />
             </TabsTrigger>
           </TabsList>
 
