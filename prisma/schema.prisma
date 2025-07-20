@@ -95,6 +95,7 @@ model Product {
   cc           Float
   price        Float
   shipment     Float
+  isAvailable  Boolean       @default(true)
   invoiceItems InvoiceItem[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

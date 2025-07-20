@@ -13,13 +13,18 @@ import { InvoiceGenerator } from "@/app/(main)/dashboard/_components/invoice-gen
 import { PricingSettings } from "@/app/(main)/dashboard/_components/pricing-settings";
 import ProductSection from "@/app/(main)/dashboard/_components/product-section";
 import { ShoppingCart } from "@/app/(main)/dashboard/_components/shopping-cart";
+import { UserButton } from "@/app/(main)/dashboard/_components/user-button";
 
 const DashboardPage = async () => {
   const products = await getAllProducts();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="relative container mx-auto px-4 py-8">
+        <div className="absolute top-8 left-4">
+          <UserButton />
+        </div>
+
         {/* Header */}
         <div className="mb-8 flex flex-col items-center justify-center">
           <h1 className="mb-2 text-4xl font-bold text-gray-900">
@@ -30,14 +35,12 @@ const DashboardPage = async () => {
           </p>
         </div>
 
-        {/* Main Content */}
         <Tabs defaultValue="products" className="space-y-6" dir="rtl">
           <TabsList className="flex w-full flex-wrap">
             <TabsTrigger
               value="products"
               className="flex min-w-[120px] flex-1 items-center justify-center gap-2"
             >
-              {/* Removed the LTR-specific `sm:mr-0` class from the icon */}
               <span className="">محصولات</span>
               <Package className="hidden h-4 w-4 sm:inline" />
             </TabsTrigger>
@@ -64,22 +67,15 @@ const DashboardPage = async () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Products Tab */}
           <TabsContent value="products" className="space-y-6">
             <ProductSection products={products} />
           </TabsContent>
-
-          {/* Cart Tab */}
           <TabsContent value="cart">
             <ShoppingCart />
           </TabsContent>
-
-          {/* Settings Tab */}
           <TabsContent value="settings">
             <PricingSettings />
           </TabsContent>
-
-          {/* Invoice Tab */}
           <TabsContent value="invoice">
             <InvoiceGenerator />
           </TabsContent>
