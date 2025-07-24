@@ -12,7 +12,7 @@ import db from "@/lib/prisma";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await auth();
-  if (!session?.user && session?.user.role !== Role.ADMIN)
+  if (!session?.user || session.user.role !== Role.ADMIN)
     return { error: "دسترسی غیرمجاز" };
 
   const { code, product_name, cc, price } = data;

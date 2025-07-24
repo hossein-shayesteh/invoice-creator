@@ -379,7 +379,11 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                             user.role === "ADMIN" ? "default" : "secondary"
                           }
                         >
-                          {user.role === "ADMIN" ? "ادمین" : "کاربر"}
+                          {user.role === "ADMIN"
+                            ? "ادمین"
+                            : user.role === "MODERATOR"
+                              ? "دستیار ادمین"
+                              : "کاربر"}
                         </Badge>
                       </TableCell>
 

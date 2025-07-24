@@ -13,10 +13,10 @@ import db from "@/lib/prisma";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await auth();
-  if (!session?.user && session?.user.role !== Role.ADMIN)
+  if (!session?.user || session.user.role !== Role.ADMIN)
     return { error: "دسترسی غیرمجاز" };
 
-  const { id, username, password, name, isAdmin, idNumber } = data;
+  const { id, username, password, name, isAdmin, idNumber, isModerator } = data;
 
   let user;
 
@@ -38,6 +38,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         throw new Error(`کاربر با نام کاربری "${username}" از قبل وجود دارد`);
     }
 
+    if (isAdmin && isModerator) {
+      return { error: "کاربر نمی‌تواند هم‌زمان ادمین و دستیار ادمین باشد" };
+    }
+
     const updateData: {
       name: string;
       username: string;
@@ -48,7 +52,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       name,
       username,
       idNumber,
-      role: isAdmin ? Role.ADMIN : Role.USER,
+      role: isAdmin ? Role.ADMIN : isModerator ? Role.MODERATOR : Role.USER,
     };
 
     if (password && password.trim() !== "") {

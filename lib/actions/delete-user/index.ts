@@ -12,7 +12,8 @@ import db from "@/lib/prisma";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await auth();
-  if (!session?.user && session?.user.role !== Role.ADMIN)
+  console.log(session?.user.role);
+  if (!session?.user || session.user.role !== Role.ADMIN)
     return { error: "دسترسی غیر مجاز" };
 
   const { id } = data;

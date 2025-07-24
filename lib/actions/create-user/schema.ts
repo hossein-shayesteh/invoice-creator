@@ -6,4 +6,5 @@ export const createUserSchema = z.object({
   password: z.string(),
   idNumber: z.string(),
   isAdmin: z.boolean(),
+  isModerator: z.boolean(),
 });

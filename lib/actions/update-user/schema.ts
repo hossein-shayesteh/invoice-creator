@@ -7,4 +7,5 @@ export const updateUserSchema = z.object({
   password: z.string().optional().nullable(),
   idNumber: z.string(),
   isAdmin: z.boolean(),
+  isModerator: z.boolean(),
 });

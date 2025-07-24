@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 
 import { auth } from "@/auth";
-import { Role } from "@prisma/client";
 
 import { createInvoiceSchema } from "@/lib/actions/create-invoice/schema";
 import { InputType, ReturnType } from "@/lib/actions/create-invoice/types";
@@ -12,8 +11,7 @@ import db from "@/lib/prisma";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await auth();
-  if (!session?.user && session?.user.role !== Role.ADMIN)
-    return { error: "دسترسی غیرمجاز" };
+  if (!session?.user) return { error: "دسترسی غیرمجاز" };
 
   const {
     discountPercentage,
