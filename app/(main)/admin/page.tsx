@@ -1,3 +1,5 @@
+import { UserButton } from "../dashboard/_components/user-button";
+import { auth } from "@/auth";
 import { Package, User } from "lucide-react";
 
 import { getAllProducts } from "@/lib/product-services";
@@ -10,20 +12,26 @@ import AdminProductsSection from "@/app/(main)/admin/_components/admin-products-
 import AdminUsersSection from "@/app/(main)/admin/_components/admin-users-section";
 
 const AdminPage = async () => {
+  const session = await auth();
   const users = await getAllUsers();
   const products = await getAllProducts();
 
+  const isModerator = session?.user.role === "MODERATOR";
+
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8" dir="rtl">
-      <div className="mb-2 text-right">
-        <h1 className="text-3xl font-bold">داشبورد ادمین</h1>
-        <p className="text-muted-foreground">
-          مدیریت کاربران و محصولات فروشگاه
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="mb-2 text-right">
+          <h1 className="text-3xl font-bold">داشبورد ادمین</h1>
+          <p className="text-muted-foreground">
+            مدیریت کاربران و محصولات فروشگاه
+          </p>
+        </div>
+        <UserButton />
       </div>
 
       <Tabs
-        defaultValue="products"
+        defaultValue="users"
         className="flex flex-col gap-6 py-6 md:w-full md:flex-row md:justify-center"
         dir="rtl"
       >
@@ -32,19 +40,21 @@ const AdminPage = async () => {
           className="flex h-fit w-full flex-row justify-start rounded-lg border md:w-64 md:flex-col md:p-3"
         >
           <TabsTrigger
-            value="products"
-            className="flex w-full items-center justify-center gap-2 px-4 py-2 text-right md:justify-start"
-          >
-            <Package className="h-5 w-5" />
-            <span>محصولات</span>
-          </TabsTrigger>
-          <TabsTrigger
             value="users"
             className="flex w-full items-center justify-center gap-2 px-4 py-2 text-right md:justify-start"
           >
             <User className="h-5 w-5" />
             <span>کاربران</span>
           </TabsTrigger>
+          {!isModerator && (
+            <TabsTrigger
+              value="products"
+              className="flex w-full items-center justify-center gap-2 px-4 py-2 text-right md:justify-start"
+            >
+              <Package className="h-5 w-5" />
+              <span>محصولات</span>
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* MAIN CONTENT AREA */}

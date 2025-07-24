@@ -108,6 +108,7 @@ ${pricingSettings.discountPercentage}%
 
 ${productLines}
 
+total CC: ${getTotalCC()}
 total: ${totalAED.toFixed(2)} (${pricingSettings.exchangeRate} AED)
 
 ${getCartTotal().toLocaleString()} T
@@ -122,7 +123,7 @@ ${getCartTotal().toLocaleString()} T
             body { 
               font-family: monospace; 
               font-size: 14px;
-              margin: 1.5rem;
+              margin: 2.5rem;
             }
           </style>
         </head>

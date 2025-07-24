@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { LogOut, User } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -19,6 +20,12 @@ import {
 
 export const UserButton = () => {
   const session = useSession();
+  const pathname = usePathname();
+
+  const isDashboard = pathname.startsWith("/dashboard");
+  const isAuth =
+    session.data?.user.role === "ADMIN" ||
+    session.data?.user.role === "MODERATOR";
 
   return (
     <DropdownMenu dir="rtl">
@@ -34,11 +41,11 @@ export const UserButton = () => {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>حساب من</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {session.data?.user.role === "ADMIN" && (
-          <Link href="/admin">
+        {isAuth && (
+          <Link href={isDashboard ? "/admin" : "/dashboard"}>
             <DropdownMenuItem className="cursor-pointer">
               <User className="mr-2 h-4 w-4" />
-              <span>داشبورد ادمین</span>
+              <span>{isDashboard ? "داشبورد ادمین" : "صفحه اصلی"}</span>
             </DropdownMenuItem>
           </Link>
         )}

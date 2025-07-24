@@ -5,9 +5,10 @@ import { auth } from "@/auth";
 const Role = {
   ADMIN: "ADMIN",
   USER: "USER",
+  MODERATOR: "MODERATOR",
 } as const;
 
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/dashboard", "/admin"];
 const adminRoutes = ["/admin"];
 
 export default async function middleware(request: NextRequest) {
@@ -28,7 +29,7 @@ export default async function middleware(request: NextRequest) {
     }
 
     // Block non-admins from admin routes
-    if (session?.user && isAdminRoute(pathname) && userRole !== Role.ADMIN) {
+    if (session?.user && isAdminRoute(pathname) && userRole === Role.USER) {
       return redirectToDashboard(request);
     }
 

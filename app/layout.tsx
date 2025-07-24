@@ -44,8 +44,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" dir="rtl">
-      <body className={`${vazirmatn.variable} antialiased`}>
+    <html dir="rtl" lang="fa" suppressHydrationWarning>
+      <body
+        className={`${vazirmatn.variable} antialiased`}
+        suppressHydrationWarning
+      >
         <AuthProvider>
           <CartProvider>
             {children}

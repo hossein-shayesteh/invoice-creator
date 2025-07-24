@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { User } from "@prisma/client";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { FileText, MoreHorizontal, Pencil, Plus, Trash } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { useAction } from "@/hooks/use-action";
 
@@ -54,22 +55,26 @@ interface AdminUsersSectionProps {
 }
 
 const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
-  const [selectedUser, setSelectedUser] = useState<GetUserByIdResult | null>(
-    null,
-  );
+  const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [userDetailsOpen, setUserDetailsOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [userInvoices, setUserInvoices] = useState<GetUserByIdInvoiceResult[]>(
     [],
   );
-  const [userDialogOpen, setUserDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<GetUserByIdResult | null>(
+    null,
+  );
   const [userFormData, setUserFormData] = useState({
     name: "",
     username: "",
     password: "",
     idNumber: "",
     isAdmin: false,
+    isModerator: false,
   });
+
+  const session = useSession();
+  const isModerator = session.data?.user.role === "MODERATOR";
 
   const { execute: executeCreateUser } = useAction(createUser, {
     onSuccess: async (_data, message) => {
@@ -124,6 +129,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
       password: "",
       idNumber: "",
       isAdmin: false,
+      isModerator: false,
     });
     setEditingUser(null);
   };
@@ -132,11 +138,6 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
   const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Handle checkbox change for isAdmin
-  const handleCheckboxChange = (checked: boolean) => {
-    setUserFormData((prev) => ({ ...prev, isAdmin: checked }));
   };
 
   // Fetch user details
@@ -187,6 +188,7 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
       password: "",
       idNumber: user.idNumber || "",
       isAdmin: user.role === "ADMIN",
+      isModerator: user.role === "MODERATOR",
     });
     setUserDialogOpen(true);
   };
@@ -284,16 +286,40 @@ const AdminUsersSection = ({ users }: AdminUsersSectionProps) => {
                 </div>
 
                 {/* 2. Use direction-agnostic 'gap' for spacing */}
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="isAdmin"
-                    checked={userFormData.isAdmin}
-                    onCheckedChange={handleCheckboxChange}
-                  />
-                  <Label htmlFor="isAdmin" className="p-0">
-                    کاربر ادمین
-                  </Label>
-                </div>
+                {!isModerator && (
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="isAdmin"
+                      checked={userFormData.isAdmin}
+                      onCheckedChange={() =>
+                        setUserFormData((prev) => ({
+                          ...prev,
+                          isAdmin: !userFormData.isAdmin,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="isAdmin" className="p-0">
+                      کاربر ادمین
+                    </Label>
+                  </div>
+                )}
+                {!isModerator && (
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="isModerator"
+                      checked={userFormData.isModerator}
+                      onCheckedChange={() =>
+                        setUserFormData((prev) => ({
+                          ...prev,
+                          isModerator: !userFormData.isModerator,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="isModerator" className="p-0">
+                      دستیار ادمین
+                    </Label>
+                  </div>
+                )}
               </div>
 
               <DialogFooter>
