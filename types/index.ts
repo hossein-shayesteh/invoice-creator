@@ -11,6 +11,7 @@ export interface CartItem extends Product {
 export interface PricingSettings {
   exchangeRate: number; // AED to T
   discountPercentage: number;
+  shipment: number;
 }
 
 declare module "next-auth" {

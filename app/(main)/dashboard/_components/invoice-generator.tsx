@@ -294,20 +294,22 @@ ${getCartTotal().toLocaleString()} T
         currentY = 20;
       }
 
-      // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + 2100)
+      // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount +  shipment)
       const regularProductCost = Math.floor(
         item.quantity *
           item.price *
           (pricingSettings.exchangeRate *
             1.05 *
             (1 - pricingSettings.discountPercentage / 100) +
-            2100),
+            pricingSettings.shipment),
       );
 
-      // For offer products, we only add shipping cost: offerQuantity * price * 2100
+      // For offer products, we only add shipping cost: offerQuantity * price * shipment
       let offerShippingCost = 0;
       if (item.offerEnabled && item.offerQuantity) {
-        offerShippingCost = Math.floor(item.offerQuantity * item.price * 2100);
+        offerShippingCost = Math.floor(
+          item.offerQuantity * item.price * pricingSettings.shipment,
+        );
       }
 
       const finalTotal = regularProductCost + offerShippingCost;
@@ -440,20 +442,22 @@ ${getCartTotal().toLocaleString()} T
 
     // Prepare invoice data for API
     const invoiceItemsData = items.map((item) => {
-      // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + 2100)
+      // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + shipment)
       const regularProductCost = Math.floor(
         item.quantity *
           item.price *
           (pricingSettings.exchangeRate *
             1.05 *
             (1 - pricingSettings.discountPercentage / 100) +
-            2100),
+            pricingSettings.shipment),
       );
 
-      // For offer products, we only add shipping cost: offerQuantity * price * 2100
+      // For offer products, we only add shipping cost: offerQuantity * price * shipment
       let offerShippingCost = 0;
       if (item.offerEnabled && item.offerQuantity) {
-        offerShippingCost = Math.floor(item.offerQuantity * item.price * 2100);
+        offerShippingCost = Math.floor(
+          item.offerQuantity * item.price * pricingSettings.shipment,
+        );
       }
 
       const finalTotal = regularProductCost + offerShippingCost;
@@ -560,12 +564,12 @@ ${getCartTotal().toLocaleString()} T
                     (pricingSettings.exchangeRate *
                       1.05 *
                       (1 - pricingSettings.discountPercentage / 100) +
-                      2100),
+                      pricingSettings.shipment),
                 );
                 let offerShippingCost = 0;
                 if (item.offerEnabled && item.offerQuantity) {
                   offerShippingCost = Math.floor(
-                    item.offerQuantity * item.price * 2100,
+                    item.offerQuantity * item.price * pricingSettings.shipment,
                   );
                 }
                 const finalTotal = regularProductCost + offerShippingCost;
@@ -623,12 +627,14 @@ ${getCartTotal().toLocaleString()} T
                         (pricingSettings.exchangeRate *
                           1.05 *
                           (1 - pricingSettings.discountPercentage / 100) +
-                          2100),
+                          pricingSettings.shipment),
                     );
                     let offerShippingCost = 0;
                     if (item.offerEnabled && item.offerQuantity) {
                       offerShippingCost = Math.floor(
-                        item.offerQuantity * item.price * 2100,
+                        item.offerQuantity *
+                          item.price *
+                          pricingSettings.shipment,
                       );
                     }
                     const finalTotal = regularProductCost + offerShippingCost;

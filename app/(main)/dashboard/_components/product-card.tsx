@@ -66,10 +66,11 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   const calculateDisplayPrice = () => {
-    const { exchangeRate, discountPercentage } = state.pricingSettings;
+    const { exchangeRate, discountPercentage, shipment } =
+      state.pricingSettings;
     return Math.floor(
       product.price *
-        (exchangeRate * 1.05 * (1 - discountPercentage / 100) + 2100),
+        (exchangeRate * 1.05 * (1 - discountPercentage / 100) + shipment),
     );
   };
 

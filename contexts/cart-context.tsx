@@ -32,12 +32,14 @@ type CartAction =
   | { type: "TOGGLE_OFFER"; payload: string }
   | { type: "UPDATE_EXCHANGE_RATE"; payload: number }
   | { type: "UPDATE_DISCOUNT"; payload: number }
+  | { type: "UPDATE_SHIPMENT"; payload: number }
   | { type: "CLEAR_CART" };
 
 // Default values if localStorage is not available
 const defaultSettings = {
   exchangeRate: 15000, // Default AED to IRR rate
   discountPercentage: 0,
+  shipment: 2100,
 };
 
 // Initialize state with empty values that will be populated in useEffect
@@ -46,6 +48,7 @@ const initialState: CartState = {
   pricingSettings: {
     exchangeRate: defaultSettings.exchangeRate,
     discountPercentage: defaultSettings.discountPercentage,
+    shipment: defaultSettings.shipment,
   },
 };
 
@@ -128,6 +131,15 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         },
       };
 
+    case "UPDATE_SHIPMENT":
+      return {
+        ...state,
+        pricingSettings: {
+          ...state.pricingSettings,
+          shipment: action.payload,
+        },
+      };
+
     case "CLEAR_CART":
       return {
         ...state,
@@ -152,6 +164,7 @@ interface CartContextType {
   toggleOffer: (code: string) => void;
   updateExchangeRate: (rate: number) => void;
   updateDiscount: (discount: number) => void;
+  updateShipment: (discount: number) => void;
   clearCart: () => void;
   getItemTotal: (item: CartItem) => number;
   getCartSubtotal: () => number;
@@ -172,11 +185,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         const savedExchangeRate = localStorage.getItem("exchangeRate");
         const savedDiscount = localStorage.getItem("discount");
+        const shipment = localStorage.getItem("shipment");
 
         if (savedExchangeRate) {
           dispatch({
             type: "UPDATE_EXCHANGE_RATE",
             payload: parseFloat(savedExchangeRate),
+          });
+        }
+
+        if (shipment) {
+          dispatch({
+            type: "UPDATE_SHIPMENT",
+            payload: parseFloat(shipment),
           });
         }
 
@@ -232,6 +253,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateShipment = (rate: number) => {
+    dispatch({ type: "UPDATE_SHIPMENT", payload: rate });
+
+    // Save to localStorage
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("shipment", rate.toString());
+      } catch (error) {
+        console.error("Error saving exchange rate to localStorage:", error);
+      }
+    }
+  };
+
   const updateDiscount = (discount: number) => {
     dispatch({ type: "UPDATE_DISCOUNT", payload: discount });
     // Save to localStorage
@@ -250,19 +284,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const getItemTotal = (item: CartItem): number => {
     const { price, quantity, offerEnabled, offerQuantity } = item;
-    const { exchangeRate, discountPercentage } = state.pricingSettings;
+    const { exchangeRate, discountPercentage, shipment } =
+      state.pricingSettings;
 
-    // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + 2100)
+    // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + shipment)
     const regularProductCost = Math.floor(
       quantity *
         price *
-        (exchangeRate * 1.05 * (1 - discountPercentage / 100) + 2100),
+        (exchangeRate * 1.05 * (1 - discountPercentage / 100) + shipment),
     );
 
-    // For offer products, we only add shipping cost: offerQuantity * price * 2100
+    // For offer products, we only add shipping cost: offerQuantity * price * shipment
     let offerShippingCost = 0;
     if (offerEnabled && offerQuantity) {
-      offerShippingCost = Math.floor(offerQuantity * price * 2100);
+      offerShippingCost = Math.floor(offerQuantity * price * shipment);
     }
 
     return regularProductCost + offerShippingCost;
@@ -279,13 +314,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const getCartSubtotal = (): number => {
     return state.items.reduce((total, item) => {
       const { price, quantity } = item;
-      const { exchangeRate, discountPercentage } = state.pricingSettings;
+      const { exchangeRate, discountPercentage, shipment } =
+        state.pricingSettings;
 
-      // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + 2100)
+      // New formula for regular products: quantity * price * (exchangeRate * 1.05 * discount + shipment)
       const regularProductCost = Math.floor(
         quantity *
           price *
-          (exchangeRate * 1.05 * (1 - discountPercentage / 100) + 2100),
+          (exchangeRate * 1.05 * (1 - discountPercentage / 100) + shipment),
       );
 
       return total + regularProductCost;
@@ -295,11 +331,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const getCartShipping = (): number => {
     return state.items.reduce((total, item) => {
       const { price, offerEnabled, offerQuantity } = item;
+      const { shipment } = state.pricingSettings;
 
-      // For offer products, we only add shipping cost: offerQuantity * price * 2100
+      // For offer products, we only add shipping cost: offerQuantity * price * shipment
       let offerShippingCost = 0;
       if (offerEnabled && offerQuantity) {
-        offerShippingCost = Math.floor(offerQuantity * price * 2100);
+        offerShippingCost = Math.floor(offerQuantity * price * shipment);
       }
 
       return total + offerShippingCost;
@@ -330,6 +367,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         toggleOffer,
         updateExchangeRate,
         updateDiscount,
+        updateShipment,
         clearCart,
         getItemTotal,
         getCartSubtotal,
